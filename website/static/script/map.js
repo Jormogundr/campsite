@@ -27,6 +27,16 @@ function showError(error) {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
   }
+
+  // Open the new campsite form
+  function openForm() {
+    document.getElementById("new_campsite_form").style.display = "block";
+  }
+  
+  // Close the new campsite form
+  function closeForm() {
+    document.getElementById("new_campsite_form").style.display = "none";
+  }
   
 
 // on successful document load, draw map
@@ -34,4 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
     navigator.geolocation.getCurrentPosition((position) => {
         drawMap(position.coords.latitude, position.coords.longitude);
       });
+
+      // handle reset button clicks
+      var addMarker = document.getElementById("button_reset");
+      reset.addEventListener("click", resetTime);
 });

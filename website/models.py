@@ -17,9 +17,9 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(150))
     notes = db.relationship('Note')
 
-class CampSite(db.Model, UserMixin):
+class CampSite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    lat = db.Column(db.Float)
-    long = db.Column(db.Float)
-    potableWater = db.Column(db.bool)
-    electrical = db.Column(db.bool)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    potableWater = db.Column(db.Boolean)
+    electrical = db.Column(db.Boolean)

@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-%}
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 <!--
     This is only needed for the note funcitonality.  
 <h1 align="center">Notes</h1>
@@ -21,8 +20,39 @@
     </div>
 </form> -->
 
+<!-- A button to open the new campsite popup form -->
+<button class="open-button" onclick="openForm()">Add Campsite</button>
+
+<!-- New campsite form -->
+<div class="form-popup" id="new_campsite_form">
+  <form class="form-container" method="POST">
+
+    <label for="latitude"><b>Latitude</b></label>
+    <input type="text" placeholder="Enter Latitude" name="latitude" required>
+
+    <label for="longitude"><b>Longitude</b></label>
+    <input type="text" placeholder="Enter Longitude" name="longitude" required>
+
+    <label for="potable"><b>Is there potable water access?</b></label>
+    <input type="checkbox" placeholder="Potable Water" name="potable">
+
+    <label for="electrical"><b>Are there electrical outlets?</b></label>
+    <input type="checkbox" placeholder="Electrical Connections" name="electrical">
+
+    <label for="visibility"><b>Hide site from other users</b></label>
+    <input type="checkbox" placeholder="Visibility" name="visibility">
+
+    <!-- Add a drop down that displays lists from the logged in user to save the new campsite too.
+    Use Jinja to display options, which are stored in the database.
+    -->
+
+    <button type="submit" class="btn">Submit</button>
+    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+  </form>
+</div>
+
 <link rel="stylesheet"
-    href="{{ url_for('static', filename='styles/universal.css') }}" />
+    href="{{ url_for('static', filename='styles/map.css') }}" />
 <link rel="stylesheet"
     href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -31,6 +61,6 @@
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin></script>
 <div align="center" id="map"></div>
-<script src="{{ url_for('static', filename='script/universal.js') }}"></script>
+<script src="{{ url_for('static', filename='script/map.js') }}"></script>
 
 {% endblock %}
