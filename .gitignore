@@ -1,6 +1,7 @@
 # pyenv items
 bin/*
 include/*
-lib/*
-lib64/*
-pyenv.cfg
+lib/
+lib64/
+var/*
+pyvenv.cfg
