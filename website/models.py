@@ -16,3 +16,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(150))
     notes = db.relationship('Note')
+
+class CampSite(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    lat = db.Column(db.Float)
+    long = db.Column(db.Float)
+    potableWater = db.Column(db.bool)
+    electrical = db.Column(db.bool)

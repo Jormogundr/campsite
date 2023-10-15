@@ -12,6 +12,7 @@
             rel="stylesheet"
             href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
             crossorigin="anonymous" />
+        
 
         <title>{% block title %}Home{% endblock %}</title>
     </head>
@@ -71,17 +72,20 @@
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
 
+        
+        <!--
+            This is only needed for the note functionality. 
         {% block javascript %}
         <script type="text/javascript">
       function deleteNote(noteId) {
-  fetch("/delete-note", {
-    method: "POST",
-    body: JSON.stringify({ noteId: noteId }),
-  }).then((_res) => {
-    window.location.href = "/";
-  });
-  }
-</script>
-        {% endblock %}
+        fetch("/delete-note", {
+            method: "POST",
+            body: JSON.stringify({ noteId: noteId }),
+        }).then((_res) => {
+            window.location.href = "/";
+        });
+        }
+        </script>
+        {% endblock %} -->
     </body>
 </html>

@@ -1,5 +1,7 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
 %}
+<!--
+    This is only needed for the note funcitonality.  
 <h1 align="center">Notes</h1>
 <ul class="list-group list-group-flush" id="notes">
     {% for note in user.notes %}
@@ -17,5 +19,18 @@
     <div align="center">
         <button type="submit" class="btn btn-primary">Add Note</button>
     </div>
-</form>
+</form> -->
+
+<link rel="stylesheet"
+    href="{{ url_for('static', filename='styles/universal.css') }}" />
+<link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin></script>
+<div align="center" id="map"></div>
+<script src="{{ url_for('static', filename='script/universal.js') }}"></script>
+
 {% endblock %}
