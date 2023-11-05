@@ -5,4 +5,4 @@ lib/
 lib64/
 var/*
 pyvenv.cfg
-/website/__pycache__/*
+website/__pycache__/

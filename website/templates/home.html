@@ -3,21 +3,37 @@
 <link rel="stylesheet" href="static/styles/home.css">
 
 {% if user.is_authenticated %}
+
 <!-- A button to open the new campsite popup form -->
 <button class="open-button" onclick="openForm()">Add Campsite</button>
+<div id="campsite-list-selector">
+    <h2>Welcome, {{ user.first_name }}</h2>
+
+    <p>To get started, add a campsite using the form, select a list to view, or
+        use the map to view other campsites.</p>
+
+    <form action="">
+        <label for="cars">Choose a list:</label>
+        <select id="cars" name="cars">
+            <!-- When DB ready, populate these options from a saved list using jinja for loop -->
+            <option value="list1">Michigan</option>
+        </select>
+    </form>
+</div>
+
 {% else %}
+
 <div id="welcome-banner">
     <h1 id="welcome">Welcome to Campsite</h1>
     <p id="welcome-message">For the outdoors enthusiast -- never again lose
         track of your favorite publically accessible outdoor recreation
-        campsites! Built for the backpackers, hunters, fishermen, off-roaders, bikepackers, trail runners, and more.</p>
+        campsites! Built for the backpackers, hunters, fishermen, off-roaders,
+        bikepackers, trail runners, and more.</p>
 
 </div>
-
 {% endif %}
 
 <!-- New campsite form-->
-
 <div class="form-popup" id="new_campsite_form">
     <form class="form-container" method="POST">
 
