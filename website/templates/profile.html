@@ -2,52 +2,44 @@
 <body>
     <link rel="stylesheet" href="/static/styles/profile.css">
     <header>
-        <h1 id="title">Nate's Profile Page</h1>
+        
     </header>
     <main>
-        <img src="static/images/nate_rmnp.jpg" alt="Nate in RMNP" id="my_photo">
-        <div>
-            <h2>Grad student at University of Michigan - Dearborn</h2>
-            <p>I am a resident of southeast Michigan. Currently, he works in the
-                self-driving vehicle industry as a field engineer, and has
-                worked on developing semantic maps for vehicle motion and
-                behavior planning, as well as routing. He has also improved
-                tooling where needed, writing programs on C and Python, in
-                addition to various scripts that help automate several
-                processes, in addition to developing Azure Databricks dashboards
-                to help gain insights on data coming off the vehicles. He is
-                also working towards a MSc in Computer Science at the University
-                of Michigan - Dearborn, where he also received his undergraduate
-                in physics with a minor in computer science.</p>
+        <div id="float-left-profile-pic">
+            <img src="static/images/nate_rmnp.jpg" alt="User profile picture"
+                id="profile_pic">
+        </div>
+        <div id="float-right-profile">
+
+            <div class="grey500Box userInfoBoxContent">
+
+                <h1 id="profileNameTopHeading" class="userProfileName">
+                    Nate Pierce
+                </h1>
+
+                <div class="infoBoxRowTitle">Details</div>
+                <div class="infoBoxRowItem">
+                    Male, The United States
+                </div>
+
+                <br class="clear">
+
+                <div class="infoBoxRowTitle">Activity</div>
+                <div class="infoBoxRowItem">
+                    Joined in September 2015,
+                    last active this month
+                </div>
+                <br class="clear">
+
+                <div class="infoBoxRowTitle">Interests</div>
+                <div class="infoBoxRowItem">
+                    comma separated phrases, please
+                </div>
+                <br class="clear">
+
+            </div>
         </div>
     </main>
-
-    <aside>
-        <h2>Fall 2023</h2>
-        <p>This semester, I am taking two courses</p>
-        <ul>
-            <li>CIS525 - Web Technology</li>
-            <li>CIS527 - Computer Networks</li>
-        </ul>
-
-        <h2>Favorite Books</h2>
-        <p>These are some of my all-time favorite books. I'm always looking for
-            book recommendations! <a href="mailto:piercen@umich.edu">Send some
-                my way</a> or <a
-                href="https://www.goodreads.com/user/show/47147568-nate-pierce">add
-                me on Goodreads</a>.</p>
-        <ul>
-            <li><i>The Silmarillion</i> by JRR Tolkien</li>
-            <li><i>Letters from a Stoic</i> by Seneca</li>
-            <li><i>Gods of Blood and Powder </i>series by Brian McClellan</li>
-            <li><i>Endurance: Shackleton's Incredible Voyage</i> by Alfred
-                Lansing</li>
-            <li><i>The Big Picture</i> by Sean Carroll</li>
-            <li><i>The Prose Edda</i> by Snorri Sturluson</li>
-            <li><i>Computational Physics</i> by Mark Newman</li>
-            <li><i>The First Law</i> trilogy by Joe Abercrombie</li>
-        </ul>
-    </aside>
 </body>
 
 {% endblock %}

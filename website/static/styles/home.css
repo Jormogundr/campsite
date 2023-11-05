@@ -1,0 +1,18 @@
+#welcome {
+    font-size: 4em;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    text-align: center;
+}
+
+#welcome-message {
+    font-size: 1.5em;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+
+#welcome-banner {
+    margin-top: 1em;
+    border: 2px solid black;
+    padding-left: 1em;
+    padding-right: 1em;
+}

@@ -1,34 +1,51 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 
+<link rel="stylesheet" href="static/styles/home.css">
+
+{% if user.is_authenticated %}
 <!-- A button to open the new campsite popup form -->
 <button class="open-button" onclick="openForm()">Add Campsite</button>
+{% else %}
+<div id="welcome-banner">
+    <h1 id="welcome">Welcome to Campsite</h1>
+    <p id="welcome-message">For the outdoors enthusiast -- never again lose
+        track of your favorite publically accessible outdoor recreation
+        campsites! Built for the backpackers, hunters, fishermen, off-roaders, bikepackers, trail runners, and more.</p>
 
-<!-- New campsite form -->
+</div>
+
+{% endif %}
+
+<!-- New campsite form-->
+
 <div class="form-popup" id="new_campsite_form">
-  <form class="form-container" method="POST">
+    <form class="form-container" method="POST">
 
-    <label for="latitude"><b>Latitude</b></label>
-    <input type="text" placeholder="Enter Latitude" name="latitude" required>
+        <label for="latitude"><b>Latitude</b></label>
+        <input type="text" placeholder="Enter Latitude" name="latitude" required>
 
-    <label for="longitude"><b>Longitude</b></label>
-    <input type="text" placeholder="Enter Longitude" name="longitude" required>
+        <label for="longitude"><b>Longitude</b></label>
+        <input type="text" placeholder="Enter Longitude" name="longitude"
+            required>
 
-    <label for="potable"><b>Is there potable water access?</b></label>
-    <input type="checkbox" placeholder="Potable Water" name="potable">
+        <label for="potable"><b>Is there potable water access?</b></label>
+        <input type="checkbox" placeholder="Potable Water" name="potable">
 
-    <label for="electrical"><b>Are there electrical outlets?</b></label>
-    <input type="checkbox" placeholder="Electrical Connections" name="electrical">
+        <label for="electrical"><b>Are there electrical outlets?</b></label>
+        <input type="checkbox" placeholder="Electrical Connections"
+            name="electrical">
 
-    <label for="visibility"><b>Hide site from other users</b></label>
-    <input type="checkbox" placeholder="Visibility" name="visibility">
+        <label for="visibility"><b>Hide site from other users</b></label>
+        <input type="checkbox" placeholder="Visibility" name="visibility">
 
-    <!-- Add a drop down that displays lists from the logged in user to save the new campsite too.
+        <!-- Add a drop down that displays lists from the logged in user to save the new campsite too.
     Use Jinja to display options, which are stored in the database.
     -->
 
-    <button type="submit" class="btn">Submit</button>
-    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-  </form>
+        <button type="submit" class="btn">Submit</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+    </form>
+
 </div>
 
 <link rel="stylesheet"
