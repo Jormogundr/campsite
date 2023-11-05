@@ -2,3 +2,4 @@ flask==2.3.3
 Flask-SQLAlchemy
 flask-login
 werkzeug==2.3.7
+gunicorn==20.0.4
