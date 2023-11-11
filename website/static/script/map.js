@@ -1,12 +1,16 @@
+// default lat lon to use when we don't have location data
+// currently over center of USA
+const default_lat = 39.0940394841749;
+const default_lon = -102.02316635857781;
+var campsite_map = L.map("map").setView([default_lat, default_lon], 8);
+
 // geolocation callbacks
 function successCallback(position) {
   return position;
 }
 
 function showError(error) {
-  // draw map with a default lat/lon defining the origin, currently over central united states
-  let default_lat = 39.0940394841749;
-  let default_lon = -102.02316635857781;
+  // draw map with a default lat/lon
   drawMap(default_lat, default_lon);
 
   const x = document.getElementById("map-error-flash");
@@ -31,16 +35,23 @@ function showError(error) {
   }
 
   // flash message about location error to user
-  x.style.visibility='visible';
+  x.style.display = "block";
   return error;
 }
 
+function addMarkers(lats, lons) {
+  for (let i = 0; i < lats.length; i++) {
+    var marker = L.marker([lats[i], lons[i]]).addTo(campsite_map);
+    console.log(lats[i], lons[i]);
+  }
+}
+
 function drawMap(lat, lon) {
-  var map = L.map("map").setView([lat, lon], 6);
+  campsite_map.setView([lat, lon], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+  }).addTo(campsite_map);
 }
 
 // Open the new campsite form
