@@ -1,17 +1,21 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from os import path
 from flask_login import LoginManager
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db = SQLAlchemy()
-DB_NAME = "campsite.db"
+db_name = os.getenv("DB_NAME")
+db_url = os.getenv("DATABASE_URL")
 
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
-    # local testing, use app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////home/nate/{DB_NAME}'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
     db.init_app(app)
 
     from .views import views
@@ -37,6 +41,6 @@ def create_app():
 
 
 def create_database(app):
-    if not path.exists('website/' + DB_NAME):
+    if not os.path.exists('website/' + db_name):
         db.create_all(app=app)
         print('Created Database!')
