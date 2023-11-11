@@ -25,13 +25,15 @@ def home():
         if longitude > 180 or longitude < -180:
             flash('Invalid longitude', category='error')
         else:
-            # save entries to model
-            new_campsite = CampSite(latitude=latitude, longitude=longitude, potableWater=hasPotable, electrical=hasElectrical)
-            db.session.add(new_campsite)
-            db.session.commit()
-            flash('Campsite added!', category='success')
-            return redirect(url_for('views.home'))
-            
+            try:
+                # save entries to model
+                new_campsite = CampSite(latitude=latitude, longitude=longitude, potableWater=hasPotable, electrical=hasElectrical)
+                db.session.add(new_campsite)
+                db.session.commit()
+                flash('Campsite added!', category='success')
+                return redirect(url_for('views.home'))
+            except: # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
+                flash('An error occurred.', category='error')
     return render_template("home.html", user=current_user)
 
 

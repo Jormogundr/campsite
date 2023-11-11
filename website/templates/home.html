@@ -2,6 +2,7 @@
 
 <link rel="stylesheet" href="static/styles/home.css">
 
+<div id="home-main-content" >
 {% if user.is_authenticated %}
 
 <!-- A button to open the new campsite popup form -->
@@ -13,8 +14,8 @@
         use the map to view other campsites.</p>
 
     <form action="">
-        <label for="cars">Choose a list:</label>
-        <select id="cars" name="cars">
+        <label for="lists">Choose a list:</label>
+        <select id="lists" name="lists">
             <!-- When DB ready, populate these options from a saved list using jinja for loop -->
             <option value="list1">Michigan</option>
         </select>
@@ -64,6 +65,8 @@
 
 </div>
 
+<!-- Map -->
+<div id="map-error-flash"></div>
 <link rel="stylesheet"
     href="{{ url_for('static', filename='styles/map.css') }}" />
 <link rel="stylesheet"
@@ -77,3 +80,5 @@
 <script src="{{ url_for('static', filename='script/map.js') }}"></script>
 
 {% endblock %}
+
+</div>
