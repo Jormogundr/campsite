@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
 
 class CampSite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     potableWater = db.Column(db.Boolean)

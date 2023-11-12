@@ -52,5 +52,3 @@ def home():
         )
     except AssertionError:
         return render_template("error.html")
-
-    return render_template("home.html", user=current_user)
