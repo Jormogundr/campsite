@@ -41,8 +41,10 @@ function showError(error) {
 
 function addMarkers(lats, lons) {
   for (let i = 0; i < lats.length; i++) {
-    var marker = L.marker([lats[i], lons[i]]).addTo(campsite_map);
-    console.log(lats[i], lons[i]);
+    let lat = lats[i];
+    let lon = lons[i];
+    var marker = L.marker([lat, lon]).addTo(campsite_map);
+    marker.bindPopup(`Latitude: ${lat} <br> Longitude: ${lon} <br>`)
   }
 }
 
