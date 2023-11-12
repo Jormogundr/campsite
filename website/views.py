@@ -12,6 +12,7 @@ def home():
     # handle campsite form submissions
     if request.method == "POST":
         # TODO: Visibility should be set on list creation, not campsite creation
+        name = request.form.get("name")
         isPrivate = True if request.form.get("visibility") == "on" else False
         hasPotable = True if request.form.get("potable") == "on" else False
         hasElectrical = True if request.form.get("electrical") == "on" else False
@@ -28,6 +29,7 @@ def home():
             try:
                 # save entries to model
                 new_campsite = CampSite(
+                    name=name,
                     latitude=latitude,
                     longitude=longitude,
                     potableWater=hasPotable,
@@ -52,3 +54,7 @@ def home():
         )
     except AssertionError:
         return render_template("error.html")
+
+@views.route("/profile", methods=["GET", "POST"])
+def profile():
+    return render_template("profile.html", user=current_user)

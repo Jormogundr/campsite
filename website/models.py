@@ -7,6 +7,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(150))
+    hobbies = db.Column(db.String(150))
 
 class CampSite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,3 +16,4 @@ class CampSite(db.Model):
     longitude = db.Column(db.Float)
     potableWater = db.Column(db.Boolean)
     electrical = db.Column(db.Boolean)
+
