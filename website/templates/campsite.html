@@ -2,43 +2,17 @@
 <body>
     <link rel="stylesheet" href="/static/styles/profile.css">
     <header>
-        
+
     </header>
     <main>
-        <div id="float-left-profile-pic">
-            <img src="static/images/nate_rmnp.jpg" alt="User profile picture"
-                id="profile_pic">
-        </div>
-        <div id="float-right-profile">
-
-            <div class="grey500Box userInfoBoxContent">
-
-                <h1 id="profileNameTopHeading" class="userProfileName">
-                    {{ user.first_name }}
-                </h1>
-
-                <div class="infoBoxRowTitle">Details</div>
-                <div class="infoBoxRowItem">
-                    Male, The United States
-                </div>
-
-                <br class="clear">
-
-                <div class="infoBoxRowTitle">Activity</div>
-                <div class="infoBoxRowItem">
-                    Joined in September 2015,
-                    last active this month
-                </div>
-                <br class="clear">
-
-                <div class="infoBoxRowTitle">Interests</div>
-                <div class="infoBoxRowItem">
-                    comma separated phrases, please
-                </div>
-                <br class="clear">
-
-            </div>
-        </div>
+        <h1 id="profileNameTopHeading" class="userProfileName">
+            {{ campsite.name }}
+        </h1>
+        <p>{{ campsite.description }}</p>
+        <ul>
+            <li>Has potable water: {{ campsite.potableWater }}</li>
+            <li>Has electrical outlets: {{ campsite.electrical}}</li>
+          </ul>
     </main>
 </body>
 

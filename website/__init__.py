@@ -12,7 +12,7 @@ db_name = os.getenv("DB_NAME")
 db_url = os.getenv("DATABASE_URL")
 
 # for local testing
-DB_NAME = "new_database.db"
+DB_NAME = "test1.db"
 
 
 def create_app():

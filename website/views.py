@@ -13,6 +13,7 @@ def home():
     if request.method == "POST":
         # TODO: Visibility should be set on list creation, not campsite creation
         name = request.form.get("name")
+        description = request.form.get("description")
         isPrivate = True if request.form.get("visibility") == "on" else False
         hasPotable = True if request.form.get("potable") == "on" else False
         hasElectrical = True if request.form.get("electrical") == "on" else False
@@ -34,6 +35,7 @@ def home():
                     longitude=longitude,
                     potableWater=hasPotable,
                     electrical=hasElectrical,
+                    description=description
                 )
                 db.session.add(new_campsite)
                 db.session.commit()
@@ -73,6 +75,12 @@ def profile():
     return render_template("profile.html", user=current_user)
 
 
-@views.route("/campsite", methods=["GET", "POST"])
-def profile():
-    return render_template("campsite.html", campsite=campsite)
+@views.route("/campsites/<int:id>", methods=["GET", "POST"])
+def show_campsite(id):
+    campsite = CampSite.query.get(id)
+    # check that user has signed in 
+    # if not current_user.is_authenticated:
+    #     flash('Please register or sign in to view campsites.', category='error')
+    #     return redirect(url_for('views.home'))
+    
+    return render_template("campsite.html", user=current_user, campsite=campsite)
