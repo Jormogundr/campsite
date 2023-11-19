@@ -48,13 +48,31 @@ def home():
         campsites = CampSite.query.all()
         campsite_lats = [getattr(c, "latitude") for c in campsites]
         campsite_lons = [getattr(c, "longitude") for c in campsites]
-        assert len(campsite_lats) == len(campsite_lons)
+        campsite_ids = [getattr(c, "id") for c in campsites]
+        campsite_names = [getattr(c, "name") for c in campsites]
+        assert (
+            len(campsite_lats)
+            == len(campsite_lons)
+            == len(campsite_ids)
+            == len(campsite_names)
+        )
         return render_template(
-            "home.html", user=current_user, lat=campsite_lats, lon=campsite_lons
+            "home.html",
+            user=current_user,
+            lats=campsite_lats,
+            lons=campsite_lons,
+            ids=campsite_ids,
+            names=campsite_names,
         )
     except AssertionError:
         return render_template("error.html")
 
+
 @views.route("/profile", methods=["GET", "POST"])
 def profile():
     return render_template("profile.html", user=current_user)
+
+
+@views.route("/campsite", methods=["GET", "POST"])
+def profile():
+    return render_template("campsite.html", campsite=campsite)

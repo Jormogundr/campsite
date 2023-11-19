@@ -17,3 +17,5 @@ class CampSite(db.Model):
     potableWater = db.Column(db.Boolean)
     electrical = db.Column(db.Boolean)
 
+# class CampSiteList(db.Model):
+

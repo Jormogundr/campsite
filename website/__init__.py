@@ -11,11 +11,16 @@ db = SQLAlchemy()
 db_name = os.getenv("DB_NAME")
 db_url = os.getenv("DATABASE_URL")
 
+# for local testing
+DB_NAME = "new_database.db"
+
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    # production db
+    # app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////home/nate/{DB_NAME}'
     db.init_app(app)
 
     from .views import views
@@ -24,7 +29,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import User, CampSite, CampSiteList
+    from .models import User, CampSite#, CampSiteList
     
     with app.app_context():
         db.create_all()

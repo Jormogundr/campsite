@@ -39,12 +39,16 @@ function showError(error) {
   return error;
 }
 
-function addMarkers(lats, lons) {
+function addMarkers(lats, lons, names, ids) {
   for (let i = 0; i < lats.length; i++) {
     let lat = lats[i];
     let lon = lons[i];
+    let name = names[i];
+    let id = ids[i];
+    // build clickable link string to redirect users to site details
+    let link = "/campsite-" + id;
     var marker = L.marker([lat, lon]).addTo(campsite_map);
-    marker.bindPopup(`Latitude: ${lat} <br> Longitude: ${lon} <br>`)
+    marker.bindPopup(`<b>Name:</b> ${name} <br> <b>Latitude:</b> ${lat} <br> <b>Longitude:</b> ${lon} <br> <a href="${link}">View Details</a>`)
   }
 }
 
@@ -52,7 +56,7 @@ function drawMap(lat, lon) {
   campsite_map.setView([lat, lon], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      '&copy; <a href="https://www.openstreetmap.org/copyright" style="text-align: center">OpenStreetMap</a> contributors',
   }).addTo(campsite_map);
 }
 

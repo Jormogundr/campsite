@@ -81,7 +81,7 @@
     crossorigin></script>
 <div align="center" id="map"></div>
 <script src="{{ url_for('static', filename='script/map.js') }}"></script>
-<script type="text/javascript">myVar = addMarkers({{lat|tojson}}, {{lon|tojson}})</script>
+<script type="text/javascript">myVar = addMarkers({{lats|tojson}}, {{lons|tojson}}, {{names|tojson}}, {{ids|tojson}})</script>
 
 {% endblock %}
 
