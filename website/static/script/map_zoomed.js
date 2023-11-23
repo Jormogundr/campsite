@@ -2,7 +2,7 @@
 // currently over center of USA
 const default_lat = 39.0940394841749;
 const default_lon = -102.02316635857781;
-var campsite_map = L.map("map").setView([default_lat, default_lon], 8);
+var campsite_map = L.map("map-zoomed");
 
 // geolocation callbacks
 function successCallback(position) {
@@ -39,37 +39,20 @@ function showError(error) {
   return error;
 }
 
-function addMarkers(lats, lons, names, ids) {
-  for (let i = 0; i < lats.length; i++) {
-    let lat = lats[i];
-    let lon = lons[i];
-    let name = names[i];
-    let id = ids[i];
-    // build clickable link string to redirect users to site details
-    let link = "/campsites/" + id;
-    var marker = L.marker([lat, lon]).addTo(campsite_map);
-    marker.bindPopup(`<b>Name:</b> ${name} <br> <b>Latitude:</b> ${lat} <br> <b>Longitude:</b> ${lon} <br> <a href="${link}">View Details</a>`)
-  }
+function addMarker(name, lat, lon) {
+  var marker = L.marker([lat, lon]).addTo(campsite_map);
+  marker.bindPopup(
+    `<b>Name:</b> ${name} <br> <b>Latitude:</b> ${lat} <br> <b>Longitude:</b> ${lon}`
+  );
+  campsite_map.setView([lat, lon], 15);
 }
 
 function drawMap(lat, lon) {
-  campsite_map.setView([lat, lon], 6);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright" style="text-align: center">OpenStreetMap</a> contributors',
+    'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   }).addTo(campsite_map);
 }
-
-// Open the new campsite form
-function openForm() {
-  document.getElementById("new_campsite_form").style.display = "block";
-}
-
-// Close the new campsite form
-function closeForm() {
-  document.getElementById("new_campsite_form").style.display = "none";
-}
-
 // on successful document load, draw map
 
 document.addEventListener("DOMContentLoaded", () => {

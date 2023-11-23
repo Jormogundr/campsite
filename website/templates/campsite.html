@@ -1,19 +1,35 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 <body>
     <link rel="stylesheet" href="/static/styles/profile.css">
-    <header>
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='styles/map.css') }}" />
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin></script>
 
-    </header>
-    <main>
-        <h1 id="profileNameTopHeading" class="userProfileName">
-            {{ campsite.name }}
-        </h1>
-        <p>{{ campsite.description }}</p>
-        <ul>
-            <li>Has potable water: {{ campsite.potableWater }}</li>
-            <li>Has electrical outlets: {{ campsite.electrical}}</li>
-          </ul>
-    </main>
+    <div id="map-error-flash"></div>
+    <div id="campsite-main-content">
+        <main id="map-zoomed">
+            <script
+                src="{{ url_for('static', filename='script/map_zoomed.js') }}"></script>
+            <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
+        </main>
+    
+        <aside>
+            <h1 id="profileNameTopHeading" class="userProfileName">
+                {{ campsite.name }}
+            </h1>
+            <p>{{ campsite.description }}</p>
+            <ul>
+                <li>Has potable water: {{ campsite.potableWater }}</li>
+                <li>Has electrical outlets: {{ campsite.electrical}}</li>
+            </ul>
+        </aside>
+    </div>
 </body>
 
 {% endblock %}

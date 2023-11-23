@@ -7,6 +7,34 @@
     margin-right: auto;
 }
 
+#map-zoomed { 
+  margin-top: 5vh;
+  height: 55vh; 
+  width: 50%;
+}
+
+#campsite-main-content {
+  background-color: beige;
+  width: 95vw;
+}
+
+body {
+  width: 95vw;
+  background-color: white;
+  margin: 15px auto;
+  height: 95vh;
+}
+main {
+  width: 40vw;
+  float: left; 
+  margin-top: 3em;
+}
+aside {
+  width: 40vw;
+  float: right;
+  margin-top: 3em;
+}
+
 /* Button used to open the contact form - fixed at the bottom of the page */
 .open-button {
   background-color: #555;

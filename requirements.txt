@@ -1,7 +1,8 @@
 flask==2.3.3
-Flask-SQLAlchemy
 flask-login
-werkzeug==2.3.7
+Flask-SQLAlchemy
 gunicorn==20.0.4
-python-dotenv
+pillow
 psycopg2-binary
+python-dotenv
+werkzeug==2.3.7

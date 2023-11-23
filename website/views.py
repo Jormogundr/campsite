@@ -1,8 +1,19 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from os import getcwd, getenv, path
+from json import loads, dumps
+
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+
 from .models import CampSite, User
 from . import db
-import json
+
+load_dotenv()
+
+# load env vars defined in .env
+CAMPSITE_PHOTO_UPLOAD_PATH = getenv("CAMPSITE_PHOTO_UPLOAD_PATH")
+ALLOWED_EXTENSIONS = getenv("ALLOWED_EXTENSIONS")
 
 views = Blueprint("views", __name__)
 
@@ -14,9 +25,13 @@ def home():
         # TODO: Visibility should be set on list creation, not campsite creation
         name = request.form.get("name")
         description = request.form.get("description")
-        isPrivate = True if request.form.get("visibility") == "on" else False
         hasPotable = True if request.form.get("potable") == "on" else False
         hasElectrical = True if request.form.get("electrical") == "on" else False
+
+        # handle photo uploads
+        validCampsitePhotoUpload = campsitePhotoUploadSuccessful()
+        if not validCampsitePhotoUpload:
+            return redirect(url_for('views.home'))   
 
         # validate user campsite submission
         latitude = float(request.form.get("latitude"))
@@ -26,6 +41,10 @@ def home():
             flash("Invalid latitude", category="error")
         if longitude > 180 or longitude < -180:
             flash("Invalid longitude", category="error")
+
+        # check for json serializable input
+        
+        # handle validated input
         else:
             try:
                 # save entries to model
@@ -84,3 +103,42 @@ def show_campsite(id):
     #     return redirect(url_for('views.home'))
     
     return render_template("campsite.html", user=current_user, campsite=campsite)
+
+
+def campsitePhotoUploadSuccessful() -> bool:
+    # retrieve file from request
+    photo = request.files['photo']
+
+    # check user upload
+    validity = False
+    if not photo:
+        return validity
+    
+    if photo.filename == '':
+        flash("No file selected.", category='error')
+        return validity
+    
+    if not allowed_file(photo.filename):
+        flash("Allowed file types are" + ALLOWED_EXTENSIONS, category='error')
+        return validity
+    
+    # name file after the submitted campsite name
+    campsiteSubdir = request.form.get("name") + "." + photo.filename.split('.')[-1]
+    filename = secure_filename(campsiteSubdir)
+    filepath = path.join(getcwd(), CAMPSITE_PHOTO_UPLOAD_PATH, filename)
+
+    # check if file already exists on server
+    if path.isfile(filepath):
+        flash("Your uploaded file already exists on the server (is your campsite entry a duplicate?)", category='error')
+        return validity
+    
+    # save the file
+    validity = True
+    photo.save(filepath)
+    return validity
+    
+
+# helper functions
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
