@@ -17,8 +17,10 @@
             <script
                 src="{{ url_for('static', filename='script/map_zoomed.js') }}"></script>
             <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
+           
         </main>
-    
+        <img src="{{ url_for('static', filename='images/campsites/' + campsite.name + '.jpg')  }}" />
+
         <aside>
             <h1 id="profileNameTopHeading" class="userProfileName">
                 {{ campsite.name }}

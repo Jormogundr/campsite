@@ -105,6 +105,7 @@ def show_campsite(id):
     return render_template("campsite.html", user=current_user, campsite=campsite)
 
 
+# Checks that the request contains a valid photo upload, then saves the file to the CAMPSITE_PHOTO_UPLOAD_PATH path (set in .env). Only jpgs will be saved. Returns a boolean flag for the validity of the upload pipe (true if input validated and in jpg form)
 def campsitePhotoUploadSuccessful() -> bool:
     # retrieve file from request
     photo = request.files['photo']
@@ -123,7 +124,7 @@ def campsitePhotoUploadSuccessful() -> bool:
         return validity
     
     # name file after the submitted campsite name
-    campsiteSubdir = request.form.get("name") + "." + photo.filename.split('.')[-1]
+    campsiteSubdir = request.form.get("name") + ".jpg"
     filename = secure_filename(campsiteSubdir)
     filepath = path.join(getcwd(), CAMPSITE_PHOTO_UPLOAD_PATH, filename)
 
@@ -132,8 +133,17 @@ def campsitePhotoUploadSuccessful() -> bool:
         flash("Your uploaded file already exists on the server (is your campsite entry a duplicate?)", category='error')
         return validity
     
-    # save the file
     validity = True
+    
+    # handle png uploads: convert to jpg then save
+    if photo.filename.split('.')[-1] != '.jpg':
+        from PIL import Image
+        im = Image.open(photo)
+        rgb_im = im.convert('RGB')
+        rgb_im.save(filepath)
+        return validity
+    
+    # save the file
     photo.save(filepath)
     return validity
     
@@ -142,3 +152,7 @@ def campsitePhotoUploadSuccessful() -> bool:
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@views.errorhandler(413)
+def error413(e):
+    return render_template('error.html'), 413

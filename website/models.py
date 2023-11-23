@@ -18,6 +18,3 @@ class CampSite(db.Model):
     electrical = db.Column(db.Boolean)
     isPrivate = db.Column(db.Boolean)
     description = db.Column(db.String(1000))
-
-# class CampSiteList(db.Model):
-

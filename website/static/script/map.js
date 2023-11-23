@@ -83,4 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
       showError(error);
     }
   );
+
+  campsite_map.on('click', function(e){
+    var coord = e.latlng;
+    var lat = coord.lat;
+    var lng = coord.lng;
+    var popup = L.popup()
+    .setLatLng([lat, lng])
+    .setContent(`Clicked location <br> Lat: ${lat} <br> Lon: ${lng}`)
+    .openOn(campsite_map);
+    });
 });
