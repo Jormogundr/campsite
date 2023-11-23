@@ -1,3 +1,7 @@
+#container {
+  height: 95vh;
+}
+
 #welcome {
   font-size: 4em;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
@@ -14,10 +18,7 @@
   border: 2px solid black;
   padding-left: 1em;
   padding-right: 1em;
-}
-
-#campsite-list-selector {
-  margin-top: 2em;
+  height: auto;
 }
 
 #map-error-flash {

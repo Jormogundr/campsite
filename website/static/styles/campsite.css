@@ -1,0 +1,27 @@
+#campsite-left-column {
+    width: 33vw;
+    float: left;
+    height: 95vh;
+    margin-top: 3em;
+}
+
+#map-zoomed {
+  width: 30vw;
+  height: 33vh;
+
+}
+
+#campsite-img {
+  margin-top: 5vh;
+  width: 33vw;
+  height: auto;
+  justify-content: right;
+}
+
+#campsite-details-right-column {
+  margin-top: 3em;
+  height: auto;
+  width: 59vw;
+  float: right;
+  margin-left: 3vw;
+}

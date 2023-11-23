@@ -1,0 +1,81 @@
+/* Main page elements */
+body {
+  background-color: white;
+}
+
+main {
+  margin-top: 2em;
+}
+
+#float-right-profile {
+  width: 40vw;
+  float: right;
+}
+
+#float-left-profile-pic {
+  float: left;
+}
+
+#float-left-profile-pic img {
+  padding: 0.26%;
+  max-width: 15vw;
+  border: #000000;
+  border-top-left-radius: 50% 50%;
+  border-top-right-radius: 50% 50%;
+  border-bottom-right-radius: 50% 50%;
+  border-bottom-left-radius: 50% 50%;
+}
+
+#profile_title {
+  text-align: center;
+  margin: 1.5em;
+}
+
+/* Media queries */
+
+/* All wide screens*/
+@media screen and (min-width: 959px) and (max-width: 3840px) {
+  #no_pdf {
+    visibility: hidden;
+  }
+}
+/* tablet portrait layout (768px to 959px) */
+@media only screen and (max-width: 959px) {
+  body {
+    width: 95vw;
+    background-color: white;
+    margin: 15px auto;
+    outline: 0px solid #000000;
+    height: 95vh;
+  }
+  #no_pdf {
+    visibility: hidden;
+  }
+}
+/* mobile landscape layout (480px to 767px) */
+@media only screen and (max-width: 767px) {
+  body {
+    width: 95vw;
+    background-color: white;
+    margin: 15px auto;
+    outline: 0px solid #000000;
+    height: 95vh;
+  }
+}
+
+/* mobile portrait layout (479px or less) */
+@media only screen and (max-width: 479px) {
+  body {
+    width: 95vw;
+    background-color: white;
+    margin: 15px auto;
+    outline: 0px solid #000000;
+    height: 95vh;
+  }
+  ul li {
+    display: inline-block;
+    margin: 0;
+    padding: 5% 0;
+    list-style-type: circle;
+  }
+}

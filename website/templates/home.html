@@ -2,94 +2,29 @@
 
 <link rel="stylesheet" href="static/styles/home.css">
 
-<div id="home-main-content">
-    {% if user.is_authenticated %}
-
-    <!-- A button to open the new campsite popup form -->
-    <button class="open-button" onclick="openForm()">Add Campsite</button>
-    <div id="campsite-list-selector">
-        <h2>Welcome, {{ user.first_name }}</h2>
-
-        <p>To get started, add a campsite using the form, select a list to view,
-            or
-            use the map to view other campsites.</p>
-
-        <form action>
-            <label for="lists">Choose a list:</label>
-            <select id="lists" name="lists">
-                <!-- When DB ready, populate these options from a saved list using jinja for loop -->
-                <option value="list1">Michigan</option>
-            </select>
-        </form>
-    </div>
-
-    {% else %}
-
-    <div id="welcome-banner">
-        <h1 id="welcome">Welcome to Campsite</h1>
-        <p id="welcome-message">For the outdoors enthusiast -- never again lose
-            track of your favorite publically accessible outdoor recreation
-            campsites! Built for the backpackers, hunters, fishermen,
-            off-roaders,
-            bikepackers, trail runners, and more.</p>
-
-    </div>
-    {% endif %}
-
-    <!-- New campsite form-->
-    <div class="form-popup" id="new_campsite_form">
-        <form class="form-container" enctype="multipart/form-data" method="POST">
-
-            <label for="name"><b>Campsite Name</b></label>
-            <input type="text" placeholder="Enter campsite name" name="name"
-                required>
-
-            <label for="latitude"><b>Latitude</b></label>
-            <input type="text" placeholder="Enter Latitude" name="latitude"
-                required>
-
-            <label for="longitude"><b>Longitude</b></label>
-            <input type="text" placeholder="Enter Longitude" name="longitude"
-                required>
-
-            <label for="description"><b>Description</b></label>
-            <input type="text" rows ="5" placeholder="Enter Description" name="description">
-
-            <label for="potable"><b>Is there potable water access?</b></label>
-            <input type="checkbox" placeholder="Potable Water" name="potable">
-
-            <label for="electrical"><b>Are there electrical outlets?</b></label>
-            <input type="checkbox" placeholder="Electrical Connections"
-                name="electrical">
-
-            <label for="photos"><b>Photos</b></label>
-            <input type="file" placeholder="photo" name="photo">
-
-            <!-- Add a drop down that displays lists from the logged in user to save the new campsite too.
-    Use Jinja to display options, which are stored in the database.
-    -->
-
-            <button type="submit" class="btn">Submit</button>
-            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-        </form>
-
-    </div>
-
-    <!-- Map -->
-    <div id="map-error-flash"></div>
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='styles/map.css') }}" />
-    <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin></script>
-    <div align="center" id="map"></div>
-    <script src="{{ url_for('static', filename='script/map.js') }}"></script>
-    <script type="text/javascript">addMarkers({{lats|tojson}}, {{lons|tojson}}, {{names|tojson}}, {{ids|tojson}})</script>
-
-    {% endblock %}
+<div id="welcome-banner">
+    <h1 id="welcome">Welcome to CampSite</h1>
+    <p id="welcome-message">For the outdoors enthusiast -- never again lose
+        track of your favorite publically accessible outdoor recreation
+        campsites! Built for the backpackers, hunters, fishermen,
+        off-roaders,
+        bikepackers, trail runners, and more.</p>
 
 </div>
+
+<!-- Map -->
+<div id="map-error-flash"></div>
+<link rel="stylesheet"
+    href="{{ url_for('static', filename='styles/map.css') }}" />
+<link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin></script>
+<div align="center" id="map"></div>
+<script src="{{ url_for('static', filename='script/map.js') }}"></script>
+<script type="text/javascript">addMarkers({{lats|tojson}}, {{lons|tojson}}, {{names|tojson}}, {{ids|tojson}})</script>
+
+{% endblock %}

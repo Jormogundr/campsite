@@ -93,6 +93,10 @@ def home():
 def profile():
     return render_template("profile.html", user=current_user)
 
+@views.route("/add-campsite", methods=["GET", "POST"])
+def addsite():
+    return render_template("add_site.html", user=current_user)
+
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])
 def show_campsite(id):

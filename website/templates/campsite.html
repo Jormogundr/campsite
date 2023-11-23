@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 <body>
-    <link rel="stylesheet" href="/static/styles/profile.css">
+    <link rel="stylesheet" href="/static/styles/campsite.css">
     <link rel="stylesheet"
         href="{{ url_for('static', filename='styles/map.css') }}" />
     <link rel="stylesheet"
@@ -11,27 +11,31 @@
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin></script>
 
-    <div id="map-error-flash"></div>
-    <div id="campsite-main-content">
-        <main id="map-zoomed">
+    <div id="campsite-left-column">
+        <div id="map-zoomed">
             <script
                 src="{{ url_for('static', filename='script/map_zoomed.js') }}"></script>
             <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
-           
-        </main>
-        <img src="{{ url_for('static', filename='images/campsites/' + campsite.name + '.jpg')  }}" />
+        </div>
 
-        <aside>
-            <h1 id="profileNameTopHeading" class="userProfileName">
-                {{ campsite.name }}
-            </h1>
-            <p>{{ campsite.description }}</p>
-            <ul>
-                <li>Has potable water: {{ campsite.potableWater }}</li>
-                <li>Has electrical outlets: {{ campsite.electrical}}</li>
-            </ul>
-        </aside>
+        <div id="campsite-img">
+            <img
+                src="{{ url_for('static', filename='images/campsites/' + campsite.name + '.jpg')  }}" />
+        </div>
+
     </div>
+
+    <aside id="campsite-details-right-column">
+        <h1 id="profileNameTopHeading" class="userProfileName">
+            {{ campsite.name }}
+        </h1>
+        <p>{{ campsite.description }}</p>
+        <ul>
+            <li>Has potable water: {{ campsite.potableWater }}</li>
+            <li>Has electrical outlets: {{ campsite.electrical}}</li>
+        </ul>
+    </aside>
+
 </body>
 
 {% endblock %}
