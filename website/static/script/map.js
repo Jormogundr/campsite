@@ -48,7 +48,9 @@ function addMarkers(lats, lons, names, ids) {
     // build clickable link string to redirect users to site details
     let link = "/campsites/" + id;
     var marker = L.marker([lat, lon]).addTo(campsite_map);
-    marker.bindPopup(`<b>Name:</b> ${name} <br> <b>Latitude:</b> ${lat} <br> <b>Longitude:</b> ${lon} <br> <a href="${link}">View Details</a>`)
+    marker.bindPopup(
+      `<b>Name:</b> ${name} <br> <b>Latitude:</b> ${lat} <br> <b>Longitude:</b> ${lon} <br> <a href="${link}">View Details</a>`
+    );
   }
 }
 
@@ -58,6 +60,12 @@ function drawMap(lat, lon) {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright" style="text-align: center">OpenStreetMap</a> contributors',
   }).addTo(campsite_map);
+
+  // show popup with hint for user
+  var popup = L.popup()
+      .setLatLng([lat, lon])
+      .setContent('<h4 align="center"><b>Tip</b></h4> <h5 align="center">Click anywhere on the map to get the latitude and longitude</h5>')
+      .openOn(campsite_map);
 }
 
 // Open the new campsite form
@@ -84,13 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   );
 
-  campsite_map.on('click', function(e){
+  // listener for on click event - display the clicked lat/lon
+  campsite_map.on("click", function (e) {
     var coord = e.latlng;
     var lat = coord.lat;
     var lng = coord.lng;
     var popup = L.popup()
-    .setLatLng([lat, lng])
-    .setContent(`Clicked location <br> Lat: ${lat} <br> Lon: ${lng}`)
-    .openOn(campsite_map);
-    });
+      .setLatLng([lat, lng])
+      .setContent(`Clicked location <br> Lat: ${lat} <br> Lon: ${lng}`)
+      .openOn(campsite_map);
+  });
 });

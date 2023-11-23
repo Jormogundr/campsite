@@ -7,6 +7,14 @@
     margin-right: auto;
 }
 
+@keyframes fade { 
+  from { opacity: 0.8; } 
+}
+
+.blink {
+  animation: fade 1s infinite alternate;
+}
+
 #map-zoomed { 
   margin-top: 5vh;
   height: 55vh; 
