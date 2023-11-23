@@ -1,81 +1,54 @@
-/* Main page elements */
-body {
-  background-color: white;
+/* Form styling  */
+
+/* Style inputs, select elements and textareas */
+input[type="text"],
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
 }
 
-main {
-  margin-top: 2em;
+input[type="checkbox"],
+select,
+textarea {
+  width: auto;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
 
-#float-right-profile {
-  width: 40vw;
+/* Style the label to display next to the inputs */
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+label #checkbox {
+  padding: 0px 0px 0px 0;
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+
+}
+
+/* Style the submit button */
+#submit-form {
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   float: right;
 }
 
-#float-left-profile-pic {
-  float: left;
-}
-
-#float-left-profile-pic img {
-  padding: 0.26%;
-  max-width: 15vw;
-  border: #000000;
-  border-top-left-radius: 50% 50%;
-  border-top-right-radius: 50% 50%;
-  border-bottom-right-radius: 50% 50%;
-  border-bottom-left-radius: 50% 50%;
-}
-
-#profile_title {
-  text-align: center;
-  margin: 1.5em;
-}
-
-/* Media queries */
-
-/* All wide screens*/
-@media screen and (min-width: 959px) and (max-width: 3840px) {
-  #no_pdf {
-    visibility: hidden;
-  }
-}
-/* tablet portrait layout (768px to 959px) */
-@media only screen and (max-width: 959px) {
-  body {
-    width: 95vw;
-    background-color: white;
-    margin: 15px auto;
-    outline: 0px solid #000000;
-    height: 95vh;
-  }
-  #no_pdf {
-    visibility: hidden;
-  }
-}
-/* mobile landscape layout (480px to 767px) */
-@media only screen and (max-width: 767px) {
-  body {
-    width: 95vw;
-    background-color: white;
-    margin: 15px auto;
-    outline: 0px solid #000000;
-    height: 95vh;
-  }
-}
-
-/* mobile portrait layout (479px or less) */
-@media only screen and (max-width: 479px) {
-  body {
-    width: 95vw;
-    background-color: white;
-    margin: 15px auto;
-    outline: 0px solid #000000;
-    height: 95vh;
-  }
-  ul li {
-    display: inline-block;
-    margin: 0;
-    padding: 5% 0;
-    list-style-type: circle;
-  }
+/* Style the container */
+#home-main-content {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
 }

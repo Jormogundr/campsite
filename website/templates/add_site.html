@@ -5,45 +5,61 @@
 <div id="home-main-content">
     {% if user.is_authenticated %}
     <!-- New campsite form-->
-    <div class="form-popup" id="new_campsite_form">
-        <form class="form-container" enctype="multipart/form-data" method="POST">
+    <form class="form-container" enctype="multipart/form-data" method="POST">
 
+        <div>
             <label for="name"><b>Campsite Name</b></label>
             <input type="text" placeholder="Enter campsite name" name="name"
                 required>
+        </div>
 
+        <div>
             <label for="latitude"><b>Latitude</b></label>
             <input type="text" placeholder="Enter Latitude" name="latitude"
                 required>
+        </div>
 
+        <div>
             <label for="longitude"><b>Longitude</b></label>
             <input type="text" placeholder="Enter Longitude" name="longitude"
                 required>
+        </div>
 
+        <div>
             <label for="description"><b>Description</b></label>
-            <input type="text" rows ="5" placeholder="Enter Description" name="description">
+            <input type="text" rows="5" placeholder="Enter Description"
+                name="description">
+        </div>
 
-            <label for="potable"><b>Is there potable water access?</b></label>
+        <div>
+            <label for="potable" class="checkbox"><b>Is there potable water
+                    access?</b></label>
             <input type="checkbox" placeholder="Potable Water" name="potable">
+        </div>
 
-            <label for="electrical"><b>Are there electrical outlets?</b></label>
+        <div>
+            <label for="electrical" class="checkbox"><b>Are there electrical
+                    outlets?</b></label>
             <input type="checkbox" placeholder="Electrical Connections"
                 name="electrical">
+        </div>
 
+        <div>
             <label for="photos"><b>Photos</b></label>
             <input type="file" placeholder="photo" name="photo">
+        </div>
 
-
-            <button type="submit" class="btn">Submit</button>
-            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-        </form>
-
-    </div>
-
-    {% endif %}
-
-    
-
-    {% endblock %}
+        <div class="submit-form">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
 
 </div>
+{% else %}
+
+<h1 align="center">You must sign in to add a campsite.</h1>
+{% endif %}
+
+
+
+{% endblock %}

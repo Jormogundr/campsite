@@ -1,14 +1,13 @@
 #campsite-left-column {
-    width: 33vw;
-    float: left;
-    height: 95vh;
-    margin-top: 3em;
+  width: 33vw;
+  float: left;
+  height: 95vh;
+  margin-top: 3em;
 }
 
 #map-zoomed {
   width: 30vw;
   height: 33vh;
-
 }
 
 #campsite-img {
