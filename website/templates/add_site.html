@@ -27,25 +27,54 @@
 
         <div>
             <label for="description"><b>Description</b></label>
-            <input type="text" rows="5" placeholder="Enter Description"
+            <input type="text" placeholder="Enter Description"
                 name="description">
         </div>
 
+        <div id="dropdown">
+            <label for="campingStyle" style="font-weight:bold">How did you camp?</label>
+            <select name="campingStyle" id="campingStyle">
+                <option value="tent">Tent</option>
+                <option value="bivy">Bivy</option>
+                <option value="hammock">Hammock</option>
+                <option value="bushcraft">Bushcraft</option>
+                <option value="car">Car</option>
+                <option value="rv">RV</option>
+                <option value="fifthWheel">Fifth Wheel</option>
+                <option value="offroad">Offroad</option>
+                <option value="cabin">Cabin</option>
+                <option value="yurt">Yurt</option>
+                <option value="leanto">Lean-to</option>
+            </select>
+        </div>
+
         <div>
-            <label for="potable" class="checkbox"><b>Is there potable water
-                    access?</b></label>
+            <label for="potable" class="checkbox"><b>Has potable water
+                    access (well, fountain, etc.) </b></label>
             <input type="checkbox" placeholder="Potable Water" name="potable">
         </div>
 
         <div>
-            <label for="electrical" class="checkbox"><b>Are there electrical
-                    outlets?</b></label>
+            <label for="electrical" class="checkbox"><b>Has electrical
+                    connections</b></label>
             <input type="checkbox" placeholder="Electrical Connections"
                 name="electrical">
         </div>
 
         <div>
-            <label for="photos"><b>Photos</b></label>
+            <label for="permitReq" class="checkbox"><b>Permit required</b></label>
+            <input type="checkbox" placeholder="Permit Required"
+                name="permitReq">
+        </div>
+
+        <div>
+            <label for="backcountry" class="checkbox"><b>Backcountry site (not road accessible)</b></label>
+            <input type="checkbox" placeholder="Backcountry"
+                name="backcountry">
+        </div>
+
+        <div>
+            <label for="photos"><b>Photo</b></label>
             <input type="file" placeholder="photo" name="photo">
         </div>
 
@@ -59,7 +88,5 @@
 
 <h1 align="center">You must sign in to add a campsite.</h1>
 {% endif %}
-
-
 
 {% endblock %}

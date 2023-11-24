@@ -29,11 +29,16 @@ label {
 }
 
 label #checkbox {
-  padding: 0px 0px 0px 0;
-  display: block;
+  padding: 12px 12px 12px 0;
+  display: inline-block;
   margin-top: 0.1em;
   margin-bottom: 0.1em;
+}
 
+#dropdown {
+  display: inline-block;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
 }
 
 /* Style the submit button */

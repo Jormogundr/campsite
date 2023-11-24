@@ -18,10 +18,19 @@
             <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
         </div>
 
+        {% if not placeholderFlag %}
         <div id="campsite-img-container">
             <img id="campsite-img"
-                src="{{ url_for('static', filename='images/campsites/' + campsite.name + '.jpg')  }}" />
+                src="{{ url_for('static', filename='images/campsites/' + photo_path)}}" />
         </div>
+
+        {% else %}
+        <div id="campsite-img-container">
+            <img id="campsite-img"
+                src="{{ url_for('static', filename='images/camps_placeholder.png')}}" />
+        </div>
+
+        {% endif %}
 
     </div>
 
@@ -29,11 +38,17 @@
         <h1 id="profileNameTopHeading" class="userProfileName">
             {{ campsite.name }}
         </h1>
-        <p>{{ campsite.description }}</p>
+
+        <h2>Details</h2>
+        <p>{{ campsite.name }} is a campsite in the {{ locale.country }}, near
+            {{locale.city}}. <a
+                href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k"
+                target="_blank">View on Google Maps</a>. </p>
+
         <ul>
-            <li>Has potable water: {{ campsite.potableWater }}</li>
+            <li>Has potable water source: {{ campsite.potableWater }}</li>
             <li>Has electrical outlets: {{ campsite.electrical}}</li>
-            <li><a href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k" target="_blank">View on Google Maps</a></li>
+            <li></li>
         </ul>
     </aside>
 

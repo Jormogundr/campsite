@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
+import reverse_geocode
 
 from .models import CampSite, User
 from . import db
@@ -60,6 +61,9 @@ def addsite():
         description = request.form.get("description")
         hasPotable = True if request.form.get("potable") == "on" else False
         hasElectrical = True if request.form.get("electrical") == "on" else False
+        isBackcountry = True if request.form.get("backcountry") == "on" else False
+        isPermitReq = True if request.form.get("permitReq") == "on" else False
+        campingStyle = request.form.get("campingStyle")
         
         errors = []
 
@@ -68,15 +72,6 @@ def addsite():
         if len(invalid_chars) != 0:
             error_msg = "Invalid characters in name: {}".format(invalid_chars)
             errors.append(error_msg)
-
-        # handle photo uploads
-        if len(invalid_chars) == 0:
-            validCampsitePhotoUpload = campsitePhotoUploadSuccessful()
-
-            if not validCampsitePhotoUpload:
-                error_msg = "There was a problem with your selected file."
-                errors.append(error_msg)
-                #return redirect(url_for("views.addsite"))
 
         # validate user campsite submission
         latitude = float(request.form.get("latitude"))
@@ -89,37 +84,61 @@ def addsite():
             error_msg = "Invalid longitude."
             errors.append(error_msg)
 
+        # handle response to invalid form entries
         if len(errors) != 0:
             for error in errors:
                 flash(error, category="error")
             return redirect(url_for("views.addsite"))
 
         # handle validated input
-        else:
-            try:
-                # save entries to model
-                new_campsite = CampSite(
-                    name=name,
-                    latitude=latitude,
-                    longitude=longitude,
-                    potableWater=hasPotable,
-                    electrical=hasElectrical,
-                    description=description,
-                )
-                db.session.add(new_campsite)
-                db.session.commit()
-                flash("Campsite added!", category="success")
-                return redirect(url_for("views.addsite"))
-            except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
-                flash("An error occurred.", category="error")
+        try:
+            # save entries to model
+            new_campsite = CampSite(
+                name=name,
+                latitude=latitude,
+                longitude=longitude,
+                potableWater=hasPotable,
+                electrical=hasElectrical,
+                description=description,
+                backCountry=isBackcountry,
+                permitRequired=isPermitReq,
+                campingStyle=campingStyle
+            )
+            db.session.add(new_campsite)
+            db.session.commit()
+            flash("Campsite added!", category="success")
+
+            # handle photo uploads just before returning since this writes to server
+            if len(invalid_chars) == 0:
+                validCampsitePhotoUpload = campsitePhotoUploadSuccessful()
+
+                if not validCampsitePhotoUpload:
+                    error_msg = "There was a problem with your selected file."
+                    errors.append(error_msg)
+                    #return redirect(url_for("views.addsite"))
+            return redirect(url_for("views.addsite"))
+        except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
+            flash("An error occurred when commiting this form to a database entry.", category="error")
 
     return render_template("add_site.html", user=current_user)
 
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])
 def show_campsite(id):
-    campsite_id = CampSite.query.get(id)
-    return render_template("campsite.html", user=current_user, campsite=campsite_id)
+    campsite = CampSite.query.get(id)
+
+    # use same method used to save file in getting file
+    campsite_photo_path = sub('[^A-Za-z0-9]+', '', campsite.name ) + '.jpg'
+
+    # use reverse geocoding to get location information based on lat/lon
+    coordinates = (campsite.latitude, campsite.longitude),
+    locale = reverse_geocode.search(coordinates)[0]
+
+    # provide default photo path for campsite if user has not uploaded
+    placeholderFlag = path.exists("website/static/images/campsites/" + campsite_photo_path)
+    print(placeholderFlag)
+    
+    return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
 
 
 # Checks that the request contains a valid photo upload, then saves the file to the CAMPSITE_PHOTO_UPLOAD_PATH path (set in .env). Only jpgs will be saved. Returns a boolean flag for the validity of the upload pipe (true if input validated and in jpg form)
@@ -143,7 +162,7 @@ def campsitePhotoUploadSuccessful() -> bool:
     # name file after the submitted campsite name
     file = request.form.get("name") 
     
-    # strip special chars from file so that 
+    # strip special chars from file
     file = sub('[^A-Za-z0-9]+', '', file) + ".jpg"
 
     filename = secure_filename(file)
