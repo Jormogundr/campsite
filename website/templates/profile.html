@@ -1,45 +1,38 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 <body>
     <link rel="stylesheet" href="/static/styles/profile.css">
-    <header>
-        
-    </header>
-    <main>
-        <div id="float-left-profile-pic">
-            <img src="static/images/nate_rmnp.jpg" alt="User profile picture"
-                id="profile_pic">
+    <div id="profiles-left-column">
+        {% if placeholderFlag %}
+        <div id="profile-img-container">
+            <img id="profile-img"
+                src="{{ url_for('static', filename='images/profiles/' + photoPath)}}" />
         </div>
-        <div id="float-right-profile">
 
-            <div class="grey500Box userInfoBoxContent">
+        {% else %}
+        <div id="profile-img-container">
+            <img id="profile-img"
+                src="{{ url_for('static', filename='images/profile_placeholder.svg')}}" />
+        </div>
 
-                <h1 id="profileNameTopHeading" class="userProfileName">
-                    {{ user.first_name }}
-                </h1>
+        {% endif %}
 
-                <div class="infoBoxRowTitle">Details</div>
-                <div class="infoBoxRowItem">
-                    Male, The United States
-                </div>
+        <aside id="profile-right-column">
+            <h1 id="profileNameTopHeading" class="userProfileName">
+                Welcome to {{ user.first_name }}'s profile
+            </h1>
 
-                <br class="clear">
-
-                <div class="infoBoxRowTitle">Activity</div>
-                <div class="infoBoxRowItem">
-                    Joined in September 2015,
-                    last active this month
-                </div>
-                <br class="clear">
-
-                <div class="infoBoxRowTitle">Interests</div>
-                <div class="infoBoxRowItem">
-                    comma separated phrases, please
-                </div>
-                <br class="clear">
-
+            <div id="profile-details">
+                <h3>About {{user.firstname}}</h3>
+                
+                <ul>
+                    <li>Favorite activities: {{user.activities}}</li>
+                    <li>Location: {{user.location}}</li>
+                    <li>Age: {{user.age}}</li>
+                </ul>
             </div>
-        </div>
-    </main>
+        </aside>
+
+    </div>
 </body>
 
 {% endblock %}

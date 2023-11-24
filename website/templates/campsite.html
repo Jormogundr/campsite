@@ -34,22 +34,28 @@
 
     </div>
 
-    <aside id="campsite-details-right-column">
+    <aside id="campsite-right-column">
         <h1 id="profileNameTopHeading" class="userProfileName">
             {{ campsite.name }}
         </h1>
 
-        <h2>Details</h2>
-        <p>{{ campsite.name }} is a campsite in the {{ locale.country }}, near
-            {{locale.city}}. <a
-                href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k"
-                target="_blank">View on Google Maps</a>. </p>
+        <div id="campsite-details">
+            <h3>Details</h3>
+            <p>{{ campsite.name }} is a campsite in the {{ locale.country }},
+                near
+                {{locale.city}}. It's a great location for
+                {{campsite.campingStyle}}-style camping! <a
+                    href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k"
+                    target="_blank">View on Google Maps</a>. </p>
 
-        <ul>
-            <li>Has potable water source: {{ campsite.potableWater }}</li>
-            <li>Has electrical outlets: {{ campsite.electrical}}</li>
-            <li></li>
-        </ul>
+            <ul>
+                <li>Coordinates: {{campsite.latitude}}, {{campsite.longitude}}</li>
+                <li>Has potable water source: {{ campsite.potableWater }}</li>
+                <li>Has electrical outlets: {{ campsite.electrical}}</li>
+                <li>Is road accessible: {{campsite.backCountry}}</li>
+                <li>Requires permit: {{campsite.permitRequired}}</li>
+            </ul>
+        </div>
     </aside>
 
 </body>

@@ -47,9 +47,17 @@ def home():
         return render_template("error.html")
 
 
-@views.route("/profile", methods=["GET", "POST"])
-def profile():
-    return render_template("profile.html", user=current_user)
+@views.route("/profile/<int:id>", methods=["GET", "POST"])
+def profile(id):
+    user = current_user
+    profile_photo_path =  str(id) + ".jpg"
+
+    # provide default photo path for profile if user has not uploaded
+    placeholderFlag = path.exists("website/static/images/profiles/" + profile_photo_path)
+    print(profile_photo_path, placeholderFlag)
+
+    
+    return render_template("profile.html", user=user, placeholderFlag=placeholderFlag, photoPath=profile_photo_path)
 
 
 @views.route("/add-campsite", methods=["GET", "POST"])
@@ -106,7 +114,7 @@ def addsite():
             )
             db.session.add(new_campsite)
             db.session.commit()
-            flash("Campsite added!", category="success")
+            flash("Campsite added.", category="success")
 
             # handle photo uploads just before returning since this writes to server
             if len(invalid_chars) == 0:
@@ -136,7 +144,6 @@ def show_campsite(id):
 
     # provide default photo path for campsite if user has not uploaded
     placeholderFlag = path.exists("website/static/images/campsites/" + campsite_photo_path)
-    print(placeholderFlag)
     
     return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
 

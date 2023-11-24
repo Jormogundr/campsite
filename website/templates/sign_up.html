@@ -1,6 +1,8 @@
 {% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
 content %}
-<form method="POST">
+
+<link rel="stylesheet" href="static/styles/sign-up.css">
+<form enctype="multipart/form-data" method="POST">
   <h3 align="center">Sign Up</h3>
   <div class="form-group">
     <label for="email">Email Address</label>
@@ -40,15 +42,37 @@ content %}
       placeholder="Confirm password" />
   </div>
   <div class="form-group">
-    <label for="hobbies">Favorite outdoor activities</label>
+    <label for="location">Favorite outdoor activities</label>
     <input
       type="text"
       class="form-control"
-      id="hobbies"
-      name="hobbies"
-      placeholder="List some of your favorite hobbies" />
+      id="location"
+      name="location"
+      placeholder="Where are you located?" />
+  </div>
+  <div class="form-group">
+    <label for="age">Favorite outdoor activities</label>
+    <input
+      type="number"
+      class="form-control"
+      id="age"
+      name="age"
+      placeholder="Age" />
+  </div>
+  <div class="form-group">
+    <label for="activities">Favorite outdoor activities</label>
+    <input
+      type="text"
+      class="form-control"
+      id="activities"
+      name="activities"
+      placeholder="List some of your favorite activities" />
   </div>
   <br />
+  <div>
+    <label for="profile_picture"><b>Upload Profile Picture</b></label>
+    <input type="file" placeholder="photo" name="profile_picture" />
+  </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %}

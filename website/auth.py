@@ -1,10 +1,21 @@
+from os import getcwd, getenv, path
+from re import findall, sub
+
+from . import db  
+
+from dotenv import load_dotenv
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db  
+from werkzeug.utils import secure_filename
 from flask_login import login_user, login_required, logout_user, current_user
 
 
+load_dotenv()
+
+# load env vars defined in .env
+PROFILE_PHOTO_UPLOAD_PATH = getenv("PROFILE_PHOTO_UPLOAD_PATH")
+ALLOWED_EXTENSIONS = getenv("ALLOWED_EXTENSIONS")
 auth = Blueprint('auth', __name__)
 
 
@@ -42,6 +53,9 @@ def sign_up():
         first_name = request.form.get('firstName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        location = request.form.get('location')
+        age = request.form.get('age')
+        activities = request.form.get('activities') if request.form.get('activities') else "None provided"
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -54,15 +68,65 @@ def sign_up():
             flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
+        elif not age.isnumeric():
+            flash('Age must be an integer.', category='error')
+        elif not any([x.isalpha() for x in location]):
+            flash('Location must contain alphabet characters.', category='error')
+        elif not profilePhotoUpload():
+            flash("There was a problem with your file.", category="error")
         else:
-            new_user = User(email=email, first_name=first_name, password=generate_password_hash(
+            new_user = User(email=email, first_name=first_name, age=age, location=location, activities=activities, password=generate_password_hash(
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
+
             return redirect(url_for('views.home'))
 
     return render_template("sign_up.html", user=current_user)
 
 
+# Checks that the request contains a valid photo upload, then saves the file to the PROFILE_PHOTO_UPLOAD_PATH path (set in .env). Only jpgs will be saved.
+def profilePhotoUpload() -> bool:
+    # retrieve file from request
+    photo = request.files["profile_picture"]
+
+    validity = False
+
+    # check user upload
+    if not photo:
+        flash("There was a problem with the file.", category="error")
+        return validity
+
+    if photo.filename == "":
+        flash("No file selected.", category="error")
+        return validity
+
+    if not allowed_file(photo.filename):
+        flash("Allowed file types are" + ALLOWED_EXTENSIONS, category="error")
+        return validity
+
+    # name file based on databaseuser id (unique)
+    filename = secure_filename(str(User.query.count() + 1) + ".jpg")
+    filepath = path.join(getcwd(), PROFILE_PHOTO_UPLOAD_PATH, filename)
+
+    validity = True
+
+    # handle png uploads: convert to jpg then save
+    if photo.filename.split(".")[-1] != ".jpg":
+        from PIL import Image
+
+        # pillow has its own save function, so return after saving
+        im = Image.open(photo)
+        rgb_im = im.convert("RGB")
+        rgb_im.save(filepath)
+        return validity
+
+    # save the file
+    photo.save(filepath)
+    return validity
+
+# helper functions
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
