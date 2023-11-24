@@ -72,7 +72,7 @@ def addsite():
         # handle photo uploads
         if len(invalid_chars) == 0:
             validCampsitePhotoUpload = campsitePhotoUploadSuccessful()
-            
+
             if not validCampsitePhotoUpload:
                 error_msg = "There was a problem with your selected file."
                 errors.append(error_msg)
@@ -118,8 +118,8 @@ def addsite():
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])
 def show_campsite(id):
-    campsite = CampSite.query.get(id)
-    return render_template("campsite.html", user=current_user, campsite=campsite)
+    campsite_id = CampSite.query.get(id)
+    return render_template("campsite.html", user=current_user, campsite=campsite_id)
 
 
 # Checks that the request contains a valid photo upload, then saves the file to the CAMPSITE_PHOTO_UPLOAD_PATH path (set in .env). Only jpgs will be saved. Returns a boolean flag for the validity of the upload pipe (true if input validated and in jpg form)

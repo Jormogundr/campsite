@@ -1,0 +1,1 @@
+sudo rm -f $HOME/campsite/website/static/images/campsites/*

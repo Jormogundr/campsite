@@ -18,8 +18,8 @@
             <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
         </div>
 
-        <div id="campsite-img">
-            <img
+        <div id="campsite-img-container">
+            <img id="campsite-img"
                 src="{{ url_for('static', filename='images/campsites/' + campsite.name + '.jpg')  }}" />
         </div>
 

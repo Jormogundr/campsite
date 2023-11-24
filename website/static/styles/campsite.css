@@ -8,13 +8,14 @@
 #map-zoomed {
   width: 30vw;
   height: 33vh;
+  position: relative;
 }
 
 #campsite-img {
   margin-top: 5vh;
-  width: 33vw;
-  height: auto;
-  justify-content: right;
+  width: 30vw;
+  max-width: 30vw;
+  position: relative;
 }
 
 #campsite-details-right-column {

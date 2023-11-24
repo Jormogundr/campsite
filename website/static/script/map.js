@@ -47,7 +47,12 @@ function addMarkers(lats, lons, names, ids) {
     let id = ids[i];
     // build clickable link string to redirect users to site details
     let link = "/campsites/" + id;
-    var marker = L.marker([lat, lon]).addTo(campsite_map);
+
+    const campIcon = L.icon({
+      iconUrl: "/static/images/camps_icon.png",
+      iconSize: [36, 36],
+    });
+    var marker = L.marker([lat, lon], { icon: campIcon }).addTo(campsite_map);
     marker.bindPopup(
       `<p align="center" style="font-weight:bold;font-size:x-large;padding-bottom:0;margin-bottom:0">${name}</p>  <br> <b>Latitude:</b> ${lat} <br> <b>Longitude:</b> ${lon} <br> <a href="${link}"><h6 align="center" style="padding-top:0.25em">View Details</h6></a>`
     );
@@ -63,9 +68,11 @@ function drawMap(lat, lon) {
 
   // show popup with hint for user
   var popup = L.popup()
-      .setLatLng([lat, lon])
-      .setContent('<h4 align="center"><b>Tip</b></h4> <h5 align="center">Click anywhere on the map to get the latitude and longitude</h5>')
-      .openOn(campsite_map);
+    .setLatLng([lat, lon])
+    .setContent(
+      '<h4 align="center"><b>Tip</b></h4> <h5 align="center">Click anywhere on the map to get the latitude and longitude</h5>'
+    )
+    .openOn(campsite_map);
 }
 
 // Open the new campsite form
