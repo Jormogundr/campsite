@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1 star rating
+  // 1 star rating
   $("#star_0").click(function () {
     $("#star_0").attr("src", "/static/images/star_filled.png");
     $("#star_1").attr("src", "/static/images/star_empty.png");

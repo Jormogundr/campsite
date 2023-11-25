@@ -13,13 +13,12 @@
   display: block;
 }
 
-
-#profile-right-column {
+#profile-column {
   height: auto;
   width: 59vw;
-  float: right;
   margin: auto;
   margin-top: 3em;
+  text-align: center;
 }
 
 #profile-details {

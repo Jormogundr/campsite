@@ -1,7 +1,6 @@
 from os import getcwd, getenv, path
-from re import findall, sub
 
-from . import db  
+from . import db
 
 from dotenv import load_dotenv
 from flask import Blueprint, render_template, request, flash, redirect, url_for
@@ -16,73 +15,87 @@ load_dotenv()
 # load env vars defined in .env
 PROFILE_PHOTO_UPLOAD_PATH = getenv("PROFILE_PHOTO_UPLOAD_PATH")
 ALLOWED_EXTENSIONS = getenv("ALLOWED_EXTENSIONS")
-auth = Blueprint('auth', __name__)
+auth = Blueprint("auth", __name__)
 
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
 
         user = User.query.filter_by(email=email).first()
         if user:
             if check_password_hash(user.password, password):
-                flash('Logged in successfully!', category='success')
+                flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return redirect(url_for("views.home"))
             else:
-                flash('Incorrect password, try again.', category='error')
+                flash("Incorrect password, try again.", category="error")
         else:
-            flash('Email does not exist.', category='error')
+            flash("Email does not exist.", category="error")
 
     return render_template("login.html", user=current_user)
 
 
-@auth.route('/logout')
+@auth.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for("auth.login"))
 
 
-@auth.route('/sign-up', methods=['GET', 'POST'])
+@auth.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        name = request.form.get('name')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-        location = request.form.get('location')
-        age = request.form.get('age')
-        activities = request.form.get('activities') if request.form.get('activities') else "None provided"
+    if request.method == "POST":
+        email = request.form.get("email")
+        name = request.form.get("name")
+        password1 = request.form.get("password1")
+        password2 = request.form.get("password2")
+        location = (
+            request.form.get("location")
+            if request.form.get("location")
+            else "None provided"
+        )
+        age = request.form.get("age") if request.form.get("age") else "None provided"
+        activities = (
+            request.form.get("activities")
+            if request.form.get("activities")
+            else "None provided"
+        )
 
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Email already exists.', category='error')
+            flash("Email already exists.", category="error")
         elif len(email) < 4:
-            flash('Email must be greater than 3 characters.', category='error')
+            flash("Email must be greater than 3 characters.", category="error")
         elif len(name) < 2:
-            flash('First name must be greater than 1 character.', category='error')
+            flash("First name must be greater than 1 character.", category="error")
         elif password1 != password2:
-            flash('Passwords don\'t match.', category='error')
+            flash("Passwords don't match.", category="error")
         elif len(password1) < 7:
-            flash('Password must be at least 7 characters.', category='error')
+            flash("Password must be at least 7 characters.", category="error")
         elif age and not age.isnumeric():
-            flash('Age must be an integer.', category='error')
+            flash("Age must be an integer.", category="error")
         elif location and not any([x.isalpha() for x in location]):
-            flash('Location must contain alphabet characters.', category='error')
+            flash("Location must contain alphabet characters.", category="error")
         elif request.files["profile_picture"] and not profilePhotoUpload():
             flash("There was a problem with your file.", category="error")
         else:
-            new_user = User(email=email, name=name, age=age, location=location, activities=activities, password=generate_password_hash(
-                password1, method='sha256'))
+            new_user = User(
+                email=email,
+                name=name,
+                age=age,
+                location=location,
+                activities=activities,
+                password=generate_password_hash(password1, method="sha256"),
+            )
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            flash('Account created!', category='success')
+            flash("Account created!", category="success")
 
-            return redirect(url_for('views.home'))
+            return redirect(url_for("views.home"))
 
     return render_template("sign_up.html", user=current_user)
 
@@ -126,6 +139,7 @@ def profilePhotoUpload() -> bool:
     # save the file
     photo.save(filepath)
     return validity
+
 
 # helper functions
 def allowed_file(filename):

@@ -44,24 +44,34 @@ def home():
             names=campsite_names,
         )
     except AssertionError:
-        return render_template("error.html", user=current_user, msg="We were unable to populate the map.")
+        return render_template(
+            "error.html", user=current_user, msg="We were unable to populate the map."
+        )
 
 
 @views.route("/profile/<int:id>", methods=["GET", "POST"])
 def profile(id):
     user = User.query.get(id)
-    
-    if not user:
-        return render_template("error.html", user=current_user, msg="No such user found.")
 
-    profile_photo_path =  str(user.id) + ".jpg"
+    if not user:
+        return render_template(
+            "error.html", user=current_user, msg="No such user found."
+        )
+
+    profile_photo_path = str(user.id) + ".jpg"
 
     # provide default photo path for profile if user has not uploaded
-    placeholderFlag = path.exists("website/static/images/profiles/" + profile_photo_path)
+    placeholderFlag = path.exists(
+        "website/static/images/profiles/" + profile_photo_path
+    )
     print(profile_photo_path, placeholderFlag)
 
-    
-    return render_template("profile.html", user=user, placeholderFlag=placeholderFlag, photoPath=profile_photo_path)
+    return render_template(
+        "profile.html",
+        user=user,
+        placeholderFlag=placeholderFlag,
+        photoPath=profile_photo_path,
+    )
 
 
 @views.route("/add-campsite", methods=["GET", "POST"])
@@ -80,7 +90,7 @@ def addsite():
         isPermitReq = True if request.form.get("permitReq") == "on" else False
         firePit = True if request.form.get("firePit") == "on" else False
         submittedBy = current_user.id
-        
+
         # initialize list for collecting and displaying errors
         errors = []
 
@@ -122,8 +132,8 @@ def addsite():
                 campingStyle=campingStyle,
                 firePit=firePit,
                 submittedBy=submittedBy,
-                rating = 5.0,
-                numRatings = 0
+                rating=5.0,
+                numRatings=0,
             )
             db.session.add(new_campsite)
             db.session.commit()
@@ -135,7 +145,10 @@ def addsite():
 
             return redirect(url_for("views.addsite"))
         except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
-            flash("An error occurred when commiting this form to a database entry.", category="error")
+            flash(
+                "An error occurred when commiting this form to a database entry.",
+                category="error",
+            )
 
     return render_template("add_site.html", user=current_user)
 
@@ -146,31 +159,54 @@ def show_campsite(id):
 
     # handle routing for campsites that don't exist
     if not campsite:
-        return render_template("error.html", user=current_user, msg="The campsite does not exist."), 404
-    
+        return (
+            render_template(
+                "error.html", user=current_user, msg="The campsite does not exist."
+            ),
+            404,
+        )
+
     # use same method used to save file in getting file
-    campsite_photo_path = sub('[^A-Za-z0-9]+', '', campsite.name ) + '.jpg'
+    campsite_photo_path = sub("[^A-Za-z0-9]+", "", campsite.name) + ".jpg"
 
     # use reverse geocoding to get location information based on lat/lon
-    coordinates = (campsite.latitude, campsite.longitude),
+    coordinates = ((campsite.latitude, campsite.longitude),)
     locale = reverse_geocode.search(coordinates)[0]
 
     # provide default photo path for campsite if user has not uploaded
-    placeholderFlag = path.exists("website/static/images/campsites/" + campsite_photo_path)
+    placeholderFlag = path.exists(
+        "website/static/images/campsites/" + campsite_photo_path
+    )
 
     # handle campsite ratings
-    if request.method == 'POST':
+    if request.method == "POST":
         if not current_user.is_authenticated:
-            flash("Only registered users can submit a campsite rating", category="error")
-            return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
-        
+            flash(
+                "Only registered users can submit a campsite rating", category="error"
+            )
+            return render_template(
+                "campsite.html",
+                user=current_user,
+                campsite=campsite,
+                photo_path=campsite_photo_path,
+                locale=locale,
+                placeholder=placeholderFlag,
+            )
+
         rating = request.form.get("rating")
 
         # validation
         if not rating:
             flash("Error getting rating.", category="error")
-            return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
-        
+            return render_template(
+                "campsite.html",
+                user=current_user,
+                campsite=campsite,
+                photo_path=campsite_photo_path,
+                locale=locale,
+                placeholder=placeholderFlag,
+            )
+
         # check if user has already rated this site
         users_that_have_rated = campsite.ratedUsers
 
@@ -179,10 +215,17 @@ def show_campsite(id):
             # check if user has already rated
             if current_user.id in users_that_have_rated:
                 flash("You've already rated this campsite.", category="error")
-                return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
+                return render_template(
+                    "campsite.html",
+                    user=current_user,
+                    campsite=campsite,
+                    photo_path=campsite_photo_path,
+                    locale=locale,
+                    placeholder=placeholderFlag,
+                )
         else:
             users_that_have_rated = [current_user.id]
-        
+
         # calculate new campsite average rating
         avg_rating = campsite.rating
         num_ratings = campsite.numRatings
@@ -194,8 +237,8 @@ def show_campsite(id):
         # average the rating
         else:
             num_ratings += 1
-            avg_rating = (avg_rating + rating)/(num_ratings)
-        
+            avg_rating = (avg_rating + rating) / (num_ratings)
+
         # commit average rating to db
         try:
             # save entries to model
@@ -209,7 +252,15 @@ def show_campsite(id):
             flash("An error occurred when handling this.", category="error")
 
     submitted_by = User.query.get(campsite.submittedBy)
-    return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag, submitted_by=submitted_by)
+    return render_template(
+        "campsite.html",
+        user=current_user,
+        campsite=campsite,
+        photo_path=campsite_photo_path,
+        locale=locale,
+        placeholder=placeholderFlag,
+        submitted_by=submitted_by,
+    )
 
 
 # Checks that the request contains a valid photo upload, then saves the file to the CAMPSITE_PHOTO_UPLOAD_PATH path (set in .env). Only jpgs will be saved. Returns a boolean flag for the validity of the upload pipe (true if input validated and in jpg form)
@@ -231,10 +282,10 @@ def campsitePhotoUploadSuccessful() -> bool:
         return validity
 
     # name file after the submitted campsite name
-    file = request.form.get("name") 
-    
+    file = request.form.get("name")
+
     # strip special chars from file
-    file = sub('[^A-Za-z0-9]+', '', file) + ".jpg"
+    file = sub("[^A-Za-z0-9]+", "", file) + ".jpg"
 
     filename = secure_filename(file)
     filepath = path.join(getcwd(), CAMPSITE_PHOTO_UPLOAD_PATH, filename)

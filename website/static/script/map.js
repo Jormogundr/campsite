@@ -75,16 +75,6 @@ function drawMap(lat, lon) {
     .openOn(campsite_map);
 }
 
-// Open the new campsite form
-function openForm() {
-  document.getElementById("new_campsite_form").style.display = "block";
-}
-
-// Close the new campsite form
-function closeForm() {
-  document.getElementById("new_campsite_form").style.display = "none";
-}
-
 // on successful document load, draw map
 
 document.addEventListener("DOMContentLoaded", () => {
