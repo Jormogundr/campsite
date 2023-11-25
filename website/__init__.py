@@ -21,7 +21,7 @@ max_file_sz = os.getenv("MAX_CONENT_LENGTH")
 secret_key = os.getenv("SECRET_KEY")
 
 # for local testing
-DB_NAME = "test14.db"
+DB_NAME = "test20.db"
 
 
 def create_app():

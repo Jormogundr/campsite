@@ -10,6 +10,9 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
 
     <div id="campsite-left-column">
         <div id="map-zoomed">
@@ -18,7 +21,7 @@
             <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
         </div>
 
-        {% if not placeholderFlag %}
+        {% if placeholderFlag %}
         <div id="campsite-img-container">
             <img id="campsite-img"
                 src="{{ url_for('static', filename='images/campsites/' + photo_path)}}" />
@@ -35,12 +38,12 @@
     </div>
 
     <aside id="campsite-right-column">
-        <h1 id="profileNameTopHeading" class="userProfileName">
+        <h1 id="campsite-right-column-title">
             {{ campsite.name }}
         </h1>
 
         <div id="campsite-details">
-            <h3>Details</h3>
+            <h3>Location</h3>
             <p>{{ campsite.name }} is a campsite in the {{ locale.country }},
                 near
                 {{locale.city}}. It's a great location for
@@ -48,13 +51,54 @@
                     href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k"
                     target="_blank">View on Google Maps</a>. </p>
 
-            <ul>
-                <li>Coordinates: {{campsite.latitude}}, {{campsite.longitude}}</li>
-                <li>Has potable water source: {{ campsite.potableWater }}</li>
-                <li>Has electrical outlets: {{ campsite.electrical}}</li>
-                <li>Is road accessible: {{campsite.backCountry}}</li>
-                <li>Requires permit: {{campsite.permitRequired}}</li>
-            </ul>
+            <div id="campsite-details-user-description">
+                <h4>
+                    Description
+                </h4>
+                <p style="display:block">{{campsite.description}}</p>
+            </div>
+
+            <div class="campsite-details-list-container">
+                <ul>
+                    <li>Coordinates: {{campsite.latitude}},
+                        {{campsite.longitude}}</li>
+                    <li>Has potable water source: {{ campsite.potableWater }}</li>
+                    <li>Has electrical outlets: {{ campsite.electrical}}</li>
+                    <li>Has firepit: {{campsite.firePit}}</li>
+                    <li>Is road accessible: {{campsite.backCountry}}</li>
+                    <li>Requires permit: {{campsite.permitRequired}}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="campsite-rating">
+            <script src="{{ url_for('static',filename='script/rate.js') }}"></script>
+            <h3>Rating</h3>
+            <p>{{campsite.rating}} stars from {{campsite.numRatings}} ratings.</p>
+            {% for i in range(5) %}
+            {% if i < campsite.rating %}
+            <img
+                src="{{ url_for('static',filename='images/star_filled.png') }}"
+                width="50" height="50" id="star_{{i}}" class="star">
+            {% else %}
+            <img
+                src="{{ url_for('static',filename='images/star_empty.png') }}"
+                width="50" height="50" id="star_{{i}}" class="star">
+            {% endif %}
+            {% endfor %}
+            <div>
+                {% if user.is_authenticated %}
+                <form method='POST' action>
+                    <input type="hidden" id="rating_content" name='rating'
+                        value='0'>
+                    <input type="submit" id="submitbtn"
+                        class="btn btn-primary mt-2"
+                        value="Submit my Rating">
+                </form>
+                {% else %}
+                <p>Only registered users can rate campsites.</p>
+                {% endif %}
+            </div>
         </div>
     </aside>
 

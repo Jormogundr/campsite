@@ -13,9 +13,7 @@
 
 #campsite-img {
   margin-top: 5vh;
-  width: 30vw;
   max-width: 30vw;
-  max-height: 30vh;
   position: relative;
 }
 
@@ -27,8 +25,35 @@
   margin-left: 3vw;
 }
 
+#campsite-right-column-title {
+  text-align: center;
+  font-size: 4em;
+}
+
 #campsite-details {
-  margin-top: 5vh;
+  margin: auto;
+}
+
+#campsite-details-user-description {
+  display: block;
+}
+
+#campsite-details-list-container {
+  margin: auto;
+
+}
+
+.star {
+  cursor: pointer;
+}
+
+#campsite-rating span {
+  display: inline;
+  margin: 0 auto;
+}
+
+#campsite-rating .checked {
+  color: orangered;
 }
 
 ul {

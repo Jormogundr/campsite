@@ -20,5 +20,10 @@ class CampSite(db.Model):
     electrical = db.Column(db.Boolean)
     description = db.Column(db.String(1000))
     backCountry = db.Column(db.Boolean)
+    firePit = db.Column(db.Boolean)
+    submittedBy = db.Column(db.Integer, db.ForeignKey('user.id'))
     permitRequired = db.Column(db.Boolean)
     campingStyle = db.Column(db.String(150))
+    rating = db.Column(db.Integer) # TODO: add & check constraints on this value at table level
+    numRatings = db.Column(db.Float)
+    ratedUsers = db.Column(db.PickleType)

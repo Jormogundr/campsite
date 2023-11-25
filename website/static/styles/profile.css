@@ -1,17 +1,25 @@
 #profile-img {
   margin-top: 5vh;
-  width: 30vw;
+  width: auto;
   max-width: 30vw;
   max-height: 30vh;
-  float: left;
+  padding: 0.26%;
+  border: #000000;
+  border-top-left-radius: 50% 50%;
+  border-top-right-radius: 50% 50%;
+  border-bottom-right-radius: 50% 50%;
+  border-bottom-left-radius: 50% 50%;
+  margin: auto;
+  display: block;
 }
 
+
 #profile-right-column {
-  margin-top: 3em;
   height: auto;
   width: 59vw;
   float: right;
-  margin-left: 3vw;
+  margin: auto;
+  margin-top: 3em;
 }
 
 #profile-details {

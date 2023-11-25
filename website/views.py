@@ -67,12 +67,17 @@ def addsite():
         # TODO: Visibility should be set on list creation, not campsite creation
         name = request.form.get("name")
         description = request.form.get("description")
+        campingStyle = request.form.get("campingStyle")
+
+        # handle checkbox form items
         hasPotable = True if request.form.get("potable") == "on" else False
         hasElectrical = True if request.form.get("electrical") == "on" else False
         isBackcountry = True if request.form.get("backcountry") == "on" else False
         isPermitReq = True if request.form.get("permitReq") == "on" else False
-        campingStyle = request.form.get("campingStyle")
+        firePit = True if request.form.get("firePit") == "on" else False
+        submittedBy = current_user.id
         
+        # initialize list for collecting and displaying errors
         errors = []
 
         # handle name validation, since name is used for file uploads
@@ -98,7 +103,7 @@ def addsite():
                 flash(error, category="error")
             return redirect(url_for("views.addsite"))
 
-        # handle validated input
+        # commit validated input to db
         try:
             # save entries to model
             new_campsite = CampSite(
@@ -110,7 +115,11 @@ def addsite():
                 description=description,
                 backCountry=isBackcountry,
                 permitRequired=isPermitReq,
-                campingStyle=campingStyle
+                campingStyle=campingStyle,
+                firePit=firePit,
+                submittedBy=submittedBy,
+                rating = 5.0,
+                numRatings = 0
             )
             db.session.add(new_campsite)
             db.session.commit()
@@ -120,10 +129,6 @@ def addsite():
             if len(invalid_chars) == 0:
                 validCampsitePhotoUpload = campsitePhotoUploadSuccessful()
 
-                if not validCampsitePhotoUpload:
-                    error_msg = "There was a problem with your selected file."
-                    errors.append(error_msg)
-                    #return redirect(url_for("views.addsite"))
             return redirect(url_for("views.addsite"))
         except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
             flash("An error occurred when commiting this form to a database entry.", category="error")
@@ -144,7 +149,61 @@ def show_campsite(id):
 
     # provide default photo path for campsite if user has not uploaded
     placeholderFlag = path.exists("website/static/images/campsites/" + campsite_photo_path)
-    
+
+    # handle campsite ratings
+    if request.method == 'POST':
+        if not current_user.is_authenticated:
+            flash("Only registered users can submit a campsite rating", category="error")
+            return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
+        
+        rating = int(request.form.get("rating"))
+
+        # validation
+        if not rating:
+            flash("Error getting rating.", category="error")
+            return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
+        
+        if rating < 1 or rating > 5:
+            flash("Rating is out of bounds.", category="error")
+            return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
+        
+        # check if user has already rated this site
+        users_that_have_rated = campsite.ratedUsers
+
+        # if user rated list is initialized
+        if users_that_have_rated:
+            # check if user has already rated
+            if current_user.id in users_that_have_rated:
+                flash("You've already rated this campsite.", category="error")
+                return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
+        else:
+            users_that_have_rated = [current_user.id]
+        
+        # calculate new campsite average rating
+        avg_rating = campsite.rating
+        num_ratings = campsite.numRatings
+
+        # no rating yet
+        if num_ratings is None or num_ratings == 0:
+            avg_rating = rating
+            num_ratings = 1
+        # average the rating
+        else:
+            num_ratings += 1
+            avg_rating = (avg_rating + rating)/(num_ratings)
+        
+        # commit average rating to db
+        try:
+            # save entries to model
+            # round rating to nearest whole number
+            campsite.rating = round(avg_rating, 2)
+            campsite.numRatings = int(num_ratings)
+            campsite.ratedUsers = users_that_have_rated
+            db.session.commit()
+            flash("Rating submitted", category="success")
+        except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
+            flash("An error occurred when handling this.", category="error")
+
     return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
 
 

@@ -1,7 +1,6 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 <body>
     <link rel="stylesheet" href="/static/styles/profile.css">
-    <div id="profiles-left-column">
         {% if placeholderFlag %}
         <div id="profile-img-container">
             <img id="profile-img"
@@ -15,6 +14,7 @@
         </div>
 
         {% endif %}
+
 
         <aside id="profile-right-column">
             <h1 id="profileNameTopHeading" class="userProfileName">
