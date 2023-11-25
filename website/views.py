@@ -44,13 +44,17 @@ def home():
             names=campsite_names,
         )
     except AssertionError:
-        return render_template("error.html")
+        return render_template("error.html", user=current_user, msg="We were unable to populate the map.")
 
 
 @views.route("/profile/<int:id>", methods=["GET", "POST"])
 def profile(id):
-    user = current_user
-    profile_photo_path =  str(id) + ".jpg"
+    user = User.query.get(id)
+    
+    if not user:
+        return render_template("error.html", user=current_user, msg="No such user found.")
+
+    profile_photo_path =  str(user.id) + ".jpg"
 
     # provide default photo path for profile if user has not uploaded
     placeholderFlag = path.exists("website/static/images/profiles/" + profile_photo_path)
@@ -127,7 +131,7 @@ def addsite():
 
             # handle photo uploads just before returning since this writes to server
             if len(invalid_chars) == 0:
-                validCampsitePhotoUpload = campsitePhotoUploadSuccessful()
+                campsitePhotoUploadSuccessful()
 
             return redirect(url_for("views.addsite"))
         except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
@@ -140,6 +144,10 @@ def addsite():
 def show_campsite(id):
     campsite = CampSite.query.get(id)
 
+    # handle routing for campsites that don't exist
+    if not campsite:
+        return render_template("error.html", user=current_user, msg="The campsite does not exist."), 404
+    
     # use same method used to save file in getting file
     campsite_photo_path = sub('[^A-Za-z0-9]+', '', campsite.name ) + '.jpg'
 
@@ -156,15 +164,11 @@ def show_campsite(id):
             flash("Only registered users can submit a campsite rating", category="error")
             return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
         
-        rating = int(request.form.get("rating"))
+        rating = request.form.get("rating")
 
         # validation
         if not rating:
             flash("Error getting rating.", category="error")
-            return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
-        
-        if rating < 1 or rating > 5:
-            flash("Rating is out of bounds.", category="error")
             return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
         
         # check if user has already rated this site
@@ -196,7 +200,7 @@ def show_campsite(id):
         try:
             # save entries to model
             # round rating to nearest whole number
-            campsite.rating = round(avg_rating, 2)
+            campsite.rating = round(float(avg_rating), 2)
             campsite.numRatings = int(num_ratings)
             campsite.ratedUsers = users_that_have_rated
             db.session.commit()
@@ -204,7 +208,8 @@ def show_campsite(id):
         except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
             flash("An error occurred when handling this.", category="error")
 
-    return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag)
+    submitted_by = User.query.get(campsite.submittedBy)
+    return render_template("campsite.html", user=current_user, campsite=campsite, photo_path=campsite_photo_path, locale=locale, placeholder=placeholderFlag, submitted_by=submitted_by)
 
 
 # Checks that the request contains a valid photo upload, then saves the file to the CAMPSITE_PHOTO_UPLOAD_PATH path (set in .env). Only jpgs will be saved. Returns a boolean flag for the validity of the upload pipe (true if input validated and in jpg form)
@@ -265,4 +270,4 @@ def allowed_file(filename):
 
 @views.errorhandler(413)
 def error413(e):
-    return render_template("error.html"), 413
+    return render_template("error.html", user=current_user), 413

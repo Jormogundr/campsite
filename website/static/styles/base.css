@@ -1,16 +1,26 @@
 #page_title {
   font-size: 2em;
+  margin-top: 2em;
 }
 
 #container {
-    width: 95vw;
-    height: 85vh;
+  width: 95vw;
+  height: 85vh;
 }
 
 body {
-    width: 95vw;
-    background-color: white;
-    margin: 15px auto;
-    height: auto;
-    max-height: 95vh;
-  }
+  width: 95vw;
+  background-color: white;
+  margin: 15px auto;
+  height: auto;
+  max-height: 95vh;
+}
+
+#error{
+  text-align: center;
+  margin-top: 3em;
+}
+
+#error h1 {
+  color: red;
+}
