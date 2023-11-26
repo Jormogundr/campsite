@@ -34,7 +34,7 @@ def create_app():
             dbname=db_name,
             sslcert="client.crt",
             sslkey="client.key",
-            sslrootcert="ca.crt",
+            sslrootcert="system",
             sslmode="verify-full",
             ssl_min_protocol_version="TLSv1.3",
         )
