@@ -31,12 +31,7 @@ def create_app():
 
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": dict(
-            dbname=db_name,
-            sslcert="client.crt",
-            sslkey="client.key",
-            sslrootcert="system",
-            sslmode="verify-full",
-            ssl_min_protocol_version="TLSv1.3",
+            sslmode="require",
         )
     }
 

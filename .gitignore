@@ -6,3 +6,4 @@ lib64/
 var/*
 pyvenv.cfg
 website/__pycache__/
+.env
