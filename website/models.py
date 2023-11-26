@@ -15,6 +15,7 @@ class User(db.Model, UserMixin):
 
 class CampSite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    submittedBy = db.Column(db.String(150), db.ForeignKey(User.name))
     name = db.Column(db.String(150))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
@@ -23,7 +24,6 @@ class CampSite(db.Model):
     description = db.Column(db.String(1000))
     backCountry = db.Column(db.Boolean)
     firePit = db.Column(db.Boolean)
-    submittedBy = db.Column(db.String(150), db.ForeignKey(User.name))
     permitRequired = db.Column(db.Boolean)
     campingStyle = db.Column(db.String(150))
     rating = db.Column(
