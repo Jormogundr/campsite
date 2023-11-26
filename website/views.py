@@ -333,12 +333,12 @@ def allowed_file(filename):
 def error413(e):
     return render_template("error.html", user=current_user), 413
 
-# testing
+# for testing and filling tables for demo purposes
 @views.route("/filltables", methods=["GET"])
 def fillTables(FILL_TABLES=False):
     FILL_TABLES = getenv("FILL_TABLES")
 
-    if not FILL_TABLES:
+    if not bool(FILL_TABLES):
         return (
             render_template(
                 "error.html", user=current_user, msg="Testing flag not true."
@@ -565,5 +565,5 @@ def fillTables(FILL_TABLES=False):
         db.session.add(new_campsite)
         db.session.commit()
 
-        flash("Table data generated", category="success")
-        return redirect(url_for("views.home"))
+    flash("Table data generated", category="success")
+    return render_template("error.html", msg="Succesfully filled tables.", user=current_user)
