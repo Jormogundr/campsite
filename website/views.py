@@ -151,7 +151,16 @@ def addsite():
                 category="error",
             )
 
-    return render_template("add_site.html", user=current_user)
+    # check if client is sending us lat/lon to autofill some form fields
+    if request.method == "GET":
+        # define vars for form field nested text
+        lat = request.args.get('lat') if request.args.get('lat') else ""
+        lon = request.args.get('lon') if request.args.get('lon') else ""
+        if lat and lon:
+            return render_template("add_site.html", user=current_user, lat=lat, lon=lon)
+        
+
+    return render_template("add_site.html", user=current_user, lat=lat, lon=lon)
 
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])

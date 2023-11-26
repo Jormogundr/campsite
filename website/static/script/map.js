@@ -92,11 +92,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // listener for on click event - display the clicked lat/lon
   campsite_map.on("click", function (e) {
     var coord = e.latlng;
-    var lat = coord.lat;
-    var lng = coord.lng;
+    var lat = coord.lat.toFixed(6);
+    var lng = coord.lng.toFixed(6);
+    let link = "/add-campsite" + `?lat=${lat}&lon=${lng}`;
     var popup = L.popup()
       .setLatLng([lat, lng])
-      .setContent(`Clicked location <br> Lat: ${lat} <br> Lon: ${lng}`)
+      .setContent(`<b>Lat:</b> ${lat} <br> <b>Lon:</b> ${lng} <a href=${link}><h6 align="center" style="padding-top:0.25em;text-align: center;">Add CampSite</h6></a>`)
       .openOn(campsite_map);
   });
 });
