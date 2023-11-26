@@ -165,7 +165,9 @@ def addsite():
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])
 def show_campsite(id):
+    # define vars passed to template 
     campsite = CampSite.query.get(id)
+    submitted_by = User.query.filter_by(name=campsite.submittedBy).first()
 
     # handle routing for campsites that don't exist
     if not campsite:
@@ -201,9 +203,10 @@ def show_campsite(id):
                 photo_path=campsite_photo_path,
                 locale=locale,
                 placeholder=placeholderFlag,
+                submitted_by=submitted_by
             )
 
-        rating = request.form.get("rating")
+        rating = float(request.form.get("rating"))
 
         # validation
         if not rating:
@@ -215,6 +218,7 @@ def show_campsite(id):
                 photo_path=campsite_photo_path,
                 locale=locale,
                 placeholder=placeholderFlag,
+                submitted_by=submitted_by
             )
 
         # check if user has already rated this site
@@ -232,13 +236,14 @@ def show_campsite(id):
                     photo_path=campsite_photo_path,
                     locale=locale,
                     placeholder=placeholderFlag,
+                    submitted_by=submitted_by
                 )
         else:
             users_that_have_rated = [current_user.id]
 
         # calculate new campsite average rating
-        avg_rating = campsite.rating
-        num_ratings = campsite.numRatings
+        avg_rating = float(campsite.rating)
+        num_ratings = int(campsite.numRatings)
 
         # no rating yet
         if num_ratings is None or num_ratings == 0:
@@ -247,7 +252,8 @@ def show_campsite(id):
         # average the rating
         else:
             num_ratings += 1
-            avg_rating = (avg_rating + rating) / (num_ratings)
+            expr = (((num_ratings - 1) * avg_rating) + rating)/num_ratings
+            avg_rating = float(round(expr,2))
 
         # commit average rating to db
         try:
@@ -261,7 +267,7 @@ def show_campsite(id):
         except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
             flash("An error occurred when handling this.", category="error")
     
-    submitted_by = User.query.filter_by(name=campsite.submittedBy).first()
+    
     return render_template(
         "campsite.html",
         user=current_user,
