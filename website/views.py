@@ -65,7 +65,6 @@ def profile(id):
     placeholderFlag = path.exists(
         "website/static/images/profiles/" + profile_photo_path
     )
-    print(profile_photo_path, placeholderFlag)
 
     return render_template(
         "profile.html",
@@ -77,6 +76,8 @@ def profile(id):
 
 @views.route("/add-campsite", methods=["GET", "POST"])
 def addsite():
+    lat = "Enter Latitude"
+    lon = "Enter Longitude"
     # handle campsite form submissions
     if request.method == "POST":
         # TODO: Visibility should be set on list creation, not campsite creation
@@ -90,7 +91,7 @@ def addsite():
         isBackcountry = True if request.form.get("backcountry") == "on" else False
         isPermitReq = True if request.form.get("permitReq") == "on" else False
         firePit = True if request.form.get("firePit") == "on" else False
-        submittedBy = current_user.id
+        submittedBy = User.query.filter_by(id=current_user.id).first()
 
         # initialize list for collecting and displaying errors
         errors = []
@@ -132,7 +133,7 @@ def addsite():
                 permitRequired=isPermitReq,
                 campingStyle=campingStyle,
                 firePit=firePit,
-                submittedBy=submittedBy,
+                submittedBy=submittedBy.name,
                 rating=5.0,
                 numRatings=0,
             )
@@ -186,7 +187,6 @@ def show_campsite(id):
     placeholderFlag = path.exists(
         "website/static/images/campsites/" + campsite_photo_path
     )
-    print(placeholderFlag, campsite_photo_path)
 
     # handle campsite ratings
     if request.method == "POST":
@@ -260,8 +260,8 @@ def show_campsite(id):
             flash("Rating submitted", category="success")
         except:  # TODO: we should catch specific exceptions https://docs.sqlalchemy.org/en/20/errors.html
             flash("An error occurred when handling this.", category="error")
-
-    submitted_by = User.query.get(campsite.submittedBy)
+    
+    submitted_by = User.query.filter_by(name=campsite.submittedBy).first()
     return render_template(
         "campsite.html",
         user=current_user,
@@ -516,12 +516,12 @@ def fillTables(FILL_TABLES=False):
         lats.append(lat)
         lons.append(lon)
 
-    print("emails", len(emails))
-    print("passwords", len(passwords))
-    print("ages", len(ages))
-    print("activities", len(activities))
-    print("locations", len(locations))
-    print("user_names", len(user_names))
+    # print("emails", len(emails))
+    # print("passwords", len(passwords))
+    # print("ages", len(ages))
+    # print("activities", len(activities))
+    # print("locations", len(locations))
+    # print("user_names", len(user_names))
 
     assert (
         len(emails)
@@ -553,19 +553,19 @@ def fillTables(FILL_TABLES=False):
         db.session.add(new_user)
         db.session.commit()
 
-    print("names", len(names))
-    print("coords", len(coords))
-    print("potableWaters", len(potableWaters))
-    print("descriptions", len(descriptions))
-    print("backCountrys", len(backCountrys))
-    print("permitsRequired", len(permitsRequired))
-    print("campingStyles", len(campingStyles))
-    print("firePits", len(firePits))
-    print("submissions", len(submissions))
-    print("ratings", len(ratings))
-    print("numRatings", len(numRatings))
-    print("lats", len(lats))
-    print("lons", len(lons))
+    # print("names", len(names))
+    # print("coords", len(coords))
+    # print("potableWaters", len(potableWaters))
+    # print("descriptions", len(descriptions))
+    # print("backCountrys", len(backCountrys))
+    # print("permitsRequired", len(permitsRequired))
+    # print("campingStyles", len(campingStyles))
+    # print("firePits", len(firePits))
+    # print("submissions", len(submissions))
+    # print("ratings", len(ratings))
+    # print("numRatings", len(numRatings))
+    # print("lats", len(lats))
+    # print("lons", len(lons))
 
     assert (
         len(names)
