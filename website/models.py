@@ -23,7 +23,7 @@ class CampSite(db.Model):
     description = db.Column(db.String(1000))
     backCountry = db.Column(db.Boolean)
     firePit = db.Column(db.Boolean)
-    submittedBy = db.Column(db.Integer, db.ForeignKey("user.name"))
+    submittedBy = db.Column(db.Integer, db.ForeignKey(User.name))
     permitRequired = db.Column(db.Boolean)
     campingStyle = db.Column(db.String(150))
     rating = db.Column(
