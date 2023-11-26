@@ -6,13 +6,15 @@ from flask_login import LoginManager
 from dotenv import load_dotenv
 
 
-# load env vars
 load_dotenv()
 
 # database
 db = SQLAlchemy()
 db_name = os.getenv("DB_NAME")
 db_url = os.getenv("DATABASE_URL")
+db_pw = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
+db_user = os.getenv("DB_USER")
 
 # media
 max_file_sz = os.getenv("MAX_CONENT_LENGTH")
@@ -25,19 +27,26 @@ secret_key = os.getenv("SECRET_KEY")
 
 
 def create_app():
+    # production db
     app = Flask(__name__)
     app.config["SECRET_KEY"] = secret_key
     app.config["MAX_CONENT_LENGTH"] = max_file_sz
-
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+    
+    # ssl required by heroku, the other vars are supplied in heroku env, only include for local debugging
+    # sqlalchemy engine configuration keys https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": dict(
             sslmode="require",
+            # username=db_user,
+            # password=db_pw,
+            # host=db_host,
+
         )
     }
 
-    # production db
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = SQLALCHEMY_ENGINE_OPTIONS
+    
     db.init_app(app)
 
     from .views import views
