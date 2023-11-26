@@ -7,7 +7,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    name = db.Column(db.String(150))
+    name = db.Column(db.String(150), unique=True)
     activities = db.Column(db.String(200))
     location = db.Column(db.String(150))
     age = db.Column(db.Integer)
@@ -23,7 +23,7 @@ class CampSite(db.Model):
     description = db.Column(db.String(1000))
     backCountry = db.Column(db.Boolean)
     firePit = db.Column(db.Boolean)
-    submittedBy = db.Column(db.Integer, db.ForeignKey(User.name))
+    submittedBy = db.Column(db.String(150), db.ForeignKey(User.name))
     permitRequired = db.Column(db.Boolean)
     campingStyle = db.Column(db.String(150))
     rating = db.Column(
