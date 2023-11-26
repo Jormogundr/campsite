@@ -21,12 +21,12 @@
             <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
         </div>
 
-        {% if placeholderFlag %}
+        {% if placeholder %}
         <div id="campsite-img-container">
             <img id="campsite-img"
                 src="{{ url_for('static', filename='images/campsites/' + photo_path)}}" />
         </div>
-
+        
         {% else %}
         <div id="campsite-img-container">
             <img id="campsite-img"

@@ -187,6 +187,7 @@ def show_campsite(id):
     placeholderFlag = path.exists(
         "website/static/images/campsites/" + campsite_photo_path
     )
+    print(placeholderFlag, campsite_photo_path)
 
     # handle campsite ratings
     if request.method == "POST":
@@ -423,9 +424,10 @@ def fillTables(FILL_TABLES=False):
         (44.036926224585116, -86.50518613137923),
         (46.619637105540484, -86.2592106425204),
         (40.28875230929873, -105.81174009688026),
+        (41.91109713699435, -83.33585130451023)
     ]
-    potableWaters = [False, False, False, False, False, False, False, True, True, True]
-    electricals = [False, False, False, False, False, False, False, True, True, False]
+    potableWaters = [False, False, False, False, False, False, False, True, True, True, True]
+    electricals = [False, False, False, False, False, False, False, True, True, False, False]
     descriptions = [
         "Very secluded site, located on the sandstone cliffs of Grand Island on Lake Superior. Nearest water access is about a 0.2 mile hike to the west (you cannot reach Lake Superior fromt he site).",
         "A nice spot on the river, just a short walk from the Windigo settlement. Very high chance to see some moose in the river.",
@@ -437,9 +439,10 @@ def fillTables(FILL_TABLES=False):
         "Just a few miles from the trailhead, a good spot for some comfort camping. The river is wide and deep at spots, with some good pools for swimming. There are several good spots to stay along the river. Only downside is that there is usually quite a lot of people.",
         "Wonderful campground. It's large, but dispersed over an area so that it doesn't feel so busy. Can still be quite crowded in the summer months, but during the fall it's quiet. Good spot to bring your kayak as Lake Hamlin is nearby. The best hike in the lower peninsula is here as well (Lost Lake Trail).",
         "Right next to Lake Superior and not too busy usually. Surrounded by old growth forests for miles around!",
+        "Not much to do, beach and water is dirty, and the trails in the area are poorly maintained and right next to a huge coal burning plant! Not to mention there's a lot of people, and the site space is just a big parking lot."
     ]
-    backCountrys = [True, True, True, True, True, True, True, True, False, False]
-    permitsRequired = [False, True, True, False, True, False, False, True, True, True]
+    backCountrys = [True, True, True, True, True, True, True, True, False, False, False]
+    permitsRequired = [False, True, True, False, True, False, False, True, True, True, True]
     campingStyles = [
         "tent",
         "lean-to",
@@ -451,11 +454,12 @@ def fillTables(FILL_TABLES=False):
         "tent",
         "RV",
         "fifth-wheel",
+        "fifth-wheel"
     ]
-    firePits = [True, True, False, False, False, True, False, False, True, True]
-    submissions = [1, 2, 1, 3, 4, 5, 6, 6, 7, 8]
-    ratings = [4.56, 4.21, 4.77, 3.99, 4.71, 4.51, 4.41, 4.19, 4.91, 4.50]
-    numRatings = [17, 8, 21, 4, 81, 36, 17, 22, 93, 9]
+    firePits = [True, True, False, False, False, True, False, False, True, True, True]
+    submissions = [1, 2, 1, 3, 4, 5, 6, 6, 7, 8, 6]
+    ratings = [4.56, 4.21, 4.77, 3.99, 4.71, 4.51, 4.41, 4.19, 4.91, 4.50, 2.91]
+    numRatings = [17, 8, 21, 4, 81, 36, 17, 22, 93, 9, 47]
     lats = []
     lons = []
     for coord in coords:
