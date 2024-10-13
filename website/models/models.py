@@ -1,20 +1,53 @@
+from enum import Enum
+
 from .. import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+class ListVisibilityType(Enum):
+    LIST_VISIBILITY_NONE = 0
+    LIST_VISIBILITY_PRIVATE = 1
+    LIST_VISIBILITY_PROTECTED = 2 # not used currently
+    LIST_VISIBILITY_PUBLIC = 3
+
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(150), unique=True)
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+
+    # A user can have multiple lists each with their own visibility
+    campsite_lists = db.relationship("CampSiteList", back_populates="user")
+
+    email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150))
-    name = db.Column(db.String(150), unique=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
     activities = db.Column(db.String(200))
     location = db.Column(db.String(150))
     age = db.Column(db.Integer)
 
+class CampSiteList(db.Model):
+    __tablename__ = 'campsite_lists'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    user = db.relationship("User", back_populates="campsite_lists")
+    campsites = db.relationship("CampSite", back_populates="campsite_list")
+
+    visibility = db.Column(db.Enum(ListVisibilityType))
+    name = db.Column(db.String(150))
+
+    # TODO: description? category?
 
 class CampSite(db.Model):
+    __tablename__ = 'campsites'
+
     id = db.Column(db.Integer, primary_key=True)
+
+    campsite_list_id = db.Column(db.Integer, db.ForeignKey('campsite_lists.id'), nullable=False)
+    campsite_list = db.relationship("CampSiteList", back_populates="campsites")
+
     submittedBy = db.Column(db.String(150), db.ForeignKey(User.name))
     name = db.Column(db.String(150))
     latitude = db.Column(db.Float)

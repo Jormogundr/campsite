@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+<body>
+    <link rel="stylesheet" href="/static/styles/view_lists.css">
+
+    <h1 id="profileNameTopHeading" class="userProfileName">
+            My CampSite Lists
+    </h1>
+
+     <ul>
+    {% for item in campsites %}
+        <li>Campsite list name {{ item.name }}</li>
+    {% endfor %}
+    </ul>
+
+</body>
+
+{% endblock %}

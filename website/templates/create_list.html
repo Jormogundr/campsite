@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
+content %}
+
+
+<h2 align="center" id="create-list-text" padding-top:"20px">Curate your own list of campsites. Share with your friends!</h1>
+
+
+<link rel="stylesheet" href="/static/styles/create_list.css">
+<form enctype="multipart/form-data" method="POST">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input
+      type="name"
+      class="form-control"
+      id="name"
+      name="name"
+      placeholder="Name of your list" />
+  </div>
+
+  <div class="form-group">
+    <label for="visibility">Visibility:</label>
+        <select id="visibility" name="visibility">
+            <option value="private">Private</option>
+            <option value="public">Public</option>
+        </select><br><br>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

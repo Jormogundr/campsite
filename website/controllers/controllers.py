@@ -1,6 +1,6 @@
 from flask import flash
 from werkzeug.security import generate_password_hash
-from ..models.models import CampSite, User
+from ..models.models import CampSite, CampSiteList, User
 from .. import db
 import reverse_geocode
 
@@ -12,7 +12,7 @@ def get_all_campsites():
     campsite_names = [getattr(c, "name") for c in campsites]
     return campsite_lats, campsite_lons, campsite_ids, campsite_names
 
-def add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy):
+def add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId):
     new_campsite = CampSite(
         name=name,
         latitude=latitude,
@@ -27,12 +27,13 @@ def add_campsite(name, latitude, longitude, hasPotable, hasElectrical, descripti
         submittedBy=submittedBy.name,
         rating=5.0,
         numRatings=0,
+        campsite_list_id = campsiteListId
     )
     db.session.add(new_campsite)
     db.session.commit()
 
-def get_campsite_details(id):
-    campsite = CampSite.query.get(id)
+def get_campsite_details(user_id):
+    campsite = CampSite.query.get(user_id)
     if not campsite:
         return None
     
@@ -67,6 +68,10 @@ def add_campsite_rating(campsite, rating, current_user):
     db.session.commit()
     
     return True, "Rating submitted"
+
+def get_user_campsite_lists(user_id):
+    campsites = CampSiteList.query.filter_by(user_id=user_id).all()
+    return campsites
 
 def fill_tables(emails, passwords, user_names, activities, locations, ages, names, coords, potableWaters, electricals, descriptions, backCountrys, permitsRequired, campingStyles, firePits, submissions, ratings, numRatings):
     # Add users

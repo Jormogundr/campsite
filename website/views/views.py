@@ -1,15 +1,16 @@
 from os import path, getcwd, getenv
-from re import sub
+from re import sub, match
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 
 from .. import db
-from ..models.models import User, CampSite
+from ..models.models import User, CampSite, CampSiteList
 
-from ..controllers.controllers import get_all_campsites, add_campsite, get_campsite_details, add_campsite_rating, fill_tables
+from ..controllers.controllers import get_all_campsites, add_campsite, get_campsite_details, add_campsite_rating, fill_tables, get_user_campsite_lists
  
 load_dotenv()
 
@@ -19,6 +20,7 @@ ALLOWED_EXTENSIONS = getenv("ALLOWED_EXTENSIONS")
 
 views = Blueprint("views", __name__)
 
+# Root view
 @views.route("/", methods=["GET", "POST"])
 def home():
     try:
@@ -36,10 +38,13 @@ def home():
             "error.html", user=current_user, msg="We were unable to populate the map."
         )
 
+# Campsite views
 @views.route("/add-campsite", methods=["GET", "POST"])
 def addsite():
     lat = "Enter Latitude"
     lon = "Enter Longitude"
+    campsiteLists = get_user_campsite_lists(current_user.id)
+
     if request.method == "POST":
         name = request.form.get("name")
         description = request.form.get("description")
@@ -52,9 +57,10 @@ def addsite():
         submittedBy = User.query.filter_by(id=current_user.id).first()
         latitude = float(request.form.get("latitude"))
         longitude = float(request.form.get("longitude"))
+        campsiteListId = request.form.get("campsiteList")
 
         try:
-            add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy)
+            add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId)
             flash("Campsite added.", category="success")
             if campsitePhotoUploadSuccessful():
                 return redirect(url_for("views.addsite"))
@@ -65,9 +71,9 @@ def addsite():
         lat = request.args.get("lat") if request.args.get("lat") else ""
         lon = request.args.get("lon") if request.args.get("lon") else ""
         if lat and lon:
-            return render_template("add_site.html", user=current_user, lat=lat, lon=lon)
+            return render_template("add_site.html", user=current_user, lat=lat, lon=lon, campsiteLists=campsiteLists)
 
-    return render_template("add_site.html", user=current_user, lat=lat, lon=lon)
+    return render_template("add_site.html", user=current_user, lat=lat, lon=lon, campsiteLists=campsiteLists)
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])
 def show_campsite(id):
@@ -99,6 +105,104 @@ def show_campsite(id):
         placeholder=placeholderFlag,
         submitted_by=submitted_by,
     )
+
+# Profile views
+@views.route("/profile/<int:id>", methods=["GET", "POST"])
+def profile(id):
+    user = User.query.get(id)
+    if not user:
+        return render_template(
+            "error.html", user=current_user, msg="No such user found."
+        )
+    profile_photo_path = str(user.id) + ".jpg"
+    # provide default photo path for profile if user has not uploaded
+    placeholderFlag = path.exists(
+        "website/static/images/profiles/" + profile_photo_path
+    )
+    return render_template(
+        "profile.html",
+        user=user,
+        placeholderFlag=placeholderFlag,
+        photoPath=profile_photo_path,
+    )
+    
+# Campsite list views
+@views.route("/my-lists/", methods=["GET"])
+def show_lists(): 
+    
+    return render_template(
+        "mylists.html",
+        user=current_user,
+    )
+
+@views.route("/view-lists/", methods=["GET"])
+def view_lists(): 
+    user_id = current_user.id
+    campsites = get_user_campsite_lists(user_id)
+    
+    return render_template(
+        "view_lists.html",
+        user=current_user,
+        campsites=campsites
+    )
+
+@views.route("/create-list/", methods=["GET", "POST"])
+def create_list(): 
+    
+    # TODO: Move this logic to controllers 
+    user_id = current_user.id
+    campsites = get_user_campsite_lists(user_id)
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        visibility = request.form.get("visibility")
+
+        errors = False
+
+        if not name or name == "":
+            flash("Must provide a valid name", category="error")
+            errors = True
+        if not visibility:
+            # should not be possible
+            flash("Must select a visibility type", category="error")
+            errors = True
+        
+        pattern = r"^[a-zA-Z0-9]+$"
+
+        if not bool(match(pattern, name)):
+            flash("Name should include alphanumeric characters only", category="error")
+            errors = True
+        
+        # TODO: Check for duplicate entry
+
+        if not errors:
+            # Construct CampSiteList entry
+            user = User.query.get(user_id)
+            
+            from ..models.models import ListVisibilityType
+
+            vis_map = {"private": ListVisibilityType.LIST_VISIBILITY_PRIVATE, "protected": ListVisibilityType.LIST_VISIBILITY_PROTECTED, "public": ListVisibilityType.LIST_VISIBILITY_PUBLIC}
+            visibility = vis_map[visibility]
+
+            new_campsite_list = CampSiteList(
+                user_id = user_id,
+                user = user,
+                visibility = visibility,
+                name = name
+            )
+
+            # TODO: Can this fail?
+            db.session.add(new_campsite_list)
+            db.session.commit()
+            
+            flash("Successfully added list!", category="info")
+    
+    return render_template(
+        "create_list.html",
+        user=current_user,
+        campsites=campsites
+    )
+
 
 @views.route("/filltables", methods=["GET"])
 def fillTables(FILL_TABLES=False):
@@ -250,8 +354,8 @@ def fillTables(FILL_TABLES=False):
         "tent",
         "tent",
         "RV",
-        "fifth-wheel",
-        "fifth-wheel",
+        "trailer",
+        "trailer",
     ]
     firePits = [True, True, False, False, False, True, False, False, True, True, True]
     submissions = [
