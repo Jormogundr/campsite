@@ -16,6 +16,10 @@ db_pw = os.getenv("DB_PASSWORD")
 db_host = os.getenv("DB_HOST")
 db_user = os.getenv("DB_USER")
 
+# SQLAlchemy prefix requires replacement: https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
 # media
 max_file_sz = os.getenv("MAX_CONENT_LENGTH")
 
