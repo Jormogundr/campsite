@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 import reverse_geocode
 
-from .models import CampSite, User
+from .models.models import CampSite, User
 from . import db
 
 load_dotenv()

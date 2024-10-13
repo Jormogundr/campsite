@@ -1,7 +1,7 @@
 from flask import flash
 from werkzeug.security import generate_password_hash
-from .models import CampSite, User
-from . import db
+from ..models.models import CampSite, User
+from .. import db
 import reverse_geocode
 
 def get_all_campsites():

@@ -6,13 +6,11 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
-from . import db
-from .models import User, CampSite
+from .. import db
+from ..models.models import User, CampSite
 
-from .controllers import get_all_campsites, add_campsite, get_campsite_details, add_campsite_rating, fill_tables
-
-
-
+from ..controllers.controllers import get_all_campsites, add_campsite, get_campsite_details, add_campsite_rating, fill_tables
+ 
 load_dotenv()
 
 # load env vars defined in .env
