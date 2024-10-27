@@ -12,6 +12,7 @@ from .. import db
 from ..models.models import User, CampSite, CampSiteList
 
 from ..controllers.controllers import *
+from ..controllers.user import *
 
 load_dotenv()
 
@@ -19,10 +20,11 @@ load_dotenv()
 CAMPSITE_PHOTO_UPLOAD_PATH = getenv("CAMPSITE_PHOTO_UPLOAD_PATH")
 ALLOWED_EXTENSIONS = getenv("ALLOWED_EXTENSIONS")
 
+
 views = Blueprint("views", __name__)
 
 # Root view
-@views.route("/", methods=["GET", "POST"])
+@views.route("/")
 def home():
     try:
         campsite_lats, campsite_lons, campsite_ids, campsite_names = get_all_campsites()
@@ -41,7 +43,7 @@ def home():
 
 # Campsite views
 @views.route("/add-campsite", methods=["GET", "POST"])
-def addsite():
+def add_campsite():
     lat = "Enter Latitude"
     lon = "Enter Longitude"
 
@@ -69,7 +71,7 @@ def addsite():
             add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId)
             flash("Campsite added.", category="success")
             if campsitePhotoUploadSuccessful():
-                return redirect(url_for("views.addsite"))
+                return redirect(url_for("views.add_campsite"))
         except:
             flash("An error occurred when committing this form to a database entry.", category="error")
 
