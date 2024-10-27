@@ -3,6 +3,7 @@ from re import sub, match
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
+from flask import jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
@@ -10,8 +11,8 @@ from dotenv import load_dotenv
 from .. import db
 from ..models.models import User, CampSite, CampSiteList
 
-from ..controllers.controllers import get_all_campsites, add_campsite, get_campsite_details, add_campsite_rating, fill_tables, get_user_campsite_lists
- 
+from ..controllers.controllers import *
+
 load_dotenv()
 
 # load env vars defined in .env
@@ -136,14 +137,93 @@ def show_lists():
     )
 
 @views.route("/view-lists/", methods=["GET"])
-def view_lists(): 
+def view_user_campsitLists(): 
+    """Returns an HTML page of all campsite lists associated with the logged in user's profile.
+
+    Returns:
+        str: HTML page with relevant information
+    """
     user_id = current_user.id
-    campsites = get_user_campsite_lists(user_id)
+    campsiteLists = get_user_campsite_lists(user_id)
     
     return render_template(
         "view_lists.html",
         user=current_user,
-        campsites=campsites
+        campsiteLists=campsiteLists,
+    )
+
+@views.route("/campsite-lists/<int:list_id>/rename", methods=["POST"])
+@login_required
+def rename_campsite_list(list_id):
+    data = request.get_json()
+    new_name = data.get('name')
+    
+    if not new_name:
+        return jsonify({'error': 'No name provided'}), 400
+        
+    campsite_list = CampSiteList.query.get_or_404(list_id)
+    
+    # Check if user owns this list
+    if campsite_list.user_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+        
+    campsite_list.name = new_name
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
+@views.route("/campsite-lists/<int:list_id>", methods=["DELETE"])
+@login_required
+def delete_campsite_list(list_id):
+    campsite_list = CampSiteList.query.get_or_404(list_id)
+    
+    # Check if user owns this list
+    if campsite_list.user_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    for campsite in campsite_list.campsites:
+        campsite.campsite_list = None
+        campsite.campsite_list_id = None
+    
+    # Then delete the list
+    db.session.delete(campsite_list)
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
+@views.route("/campsite-lists/<int:id>")
+def view_campsiteList(id):
+    """
+    
+    Return an HTML page with the information necessary to display a specific campsite list details.
+
+    Args:
+        id (int): The model campsite list id
+
+    Returns:
+        str: HTML page with relevant information
+    """
+
+    campSiteList = get_campsite_list_campsites(id)
+    if not campSiteList:
+        return render_template("error.html", msg="The campsite list does not exist."), 404
+    
+    campsites = campSiteList.campsites
+    
+    return render_template(
+        "campsite_list.html",
+        user=current_user,
+        campsitelist=campSiteList,
+        campsites = campsites,
+        list_id=id,
+        list_name=campSiteList.name
+    )
+
+# TODO: I'm thinking it'd be better to click on a little icon in the view-list view to modify the list
+@views.route("/modify-list/", methods=["GET", "POST"])
+def modify_list(): 
+    return render_template(
+        "modify_list.html"
     )
 
 @views.route("/create-list/", methods=["GET", "POST"])

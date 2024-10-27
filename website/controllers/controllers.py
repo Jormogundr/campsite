@@ -43,6 +43,10 @@ def get_campsite_details(user_id):
     
     return campsite, submitted_by, locale
 
+def get_campsite_list_campsites(user_id):
+    campsiteList = CampSiteList.query.get(user_id)
+    return campsiteList
+
 def add_campsite_rating(campsite, rating, current_user):
     users_that_have_rated = campsite.ratedUsers or []
     
@@ -71,6 +75,10 @@ def add_campsite_rating(campsite, rating, current_user):
 
 def get_user_campsite_lists(user_id):
     campsites = CampSiteList.query.filter_by(user_id=user_id).all()
+    return campsites
+
+def get_campsite_list_by_id(id):
+    campsites = CampSiteList.query.filter_by(id=id).all()
     return campsites
 
 def fill_tables(emails, passwords, user_names, activities, locations, ages, names, coords, potableWaters, electricals, descriptions, backCountrys, permitsRequired, campingStyles, firePits, submissions, ratings, numRatings):

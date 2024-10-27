@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_login import LoginManager
 from dotenv import load_dotenv
 
@@ -26,9 +27,7 @@ max_file_sz = os.getenv("MAX_CONENT_LENGTH")
 # secrets
 secret_key = os.getenv("SECRET_KEY")
 
-# for local testing
-# DB_NAME = "test30.db"
-
+migrate = Migrate()
 
 def create_app():
     # production db
@@ -52,6 +51,7 @@ def create_app():
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = SQLALCHEMY_ENGINE_OPTIONS
     
     db.init_app(app)
+    migrate.init_app(app, db)
 
     from .views.views import views
     from .auth import auth

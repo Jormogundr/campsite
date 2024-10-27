@@ -6,12 +6,11 @@
             My CampSite Lists
     </h1>
 
-     <ul>
-    {% for item in campsites %}
-        <li>Campsite list name {{ item.name }}</li>
+    <ul>
+    {% for item in campsiteLists %}
+        <li>Campsite list name: <a href="{{ url_for('views.view_campsiteList', id=item.id) }}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
 
 </body>
-
 {% endblock %}

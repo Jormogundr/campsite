@@ -45,7 +45,7 @@ class CampSite(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    campsite_list_id = db.Column(db.Integer, db.ForeignKey('campsite_lists.id'), nullable=False)
+    campsite_list_id = db.Column(db.Integer, db.ForeignKey('campsite_lists.id'), nullable=True)
     campsite_list = db.relationship("CampSiteList", back_populates="campsites")
 
     submittedBy = db.Column(db.String(150), db.ForeignKey(User.name))
