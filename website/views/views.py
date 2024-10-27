@@ -145,20 +145,51 @@ def show_campsite(id):
 def profile(id):
     user = User.query.get(id)
     if not user:
-        return render_template(
-            "error.html", user=current_user, msg="No such user found."
-        )
+        return render_template("error.html", user=current_user, msg="No such user found.")
+    
+    if request.method == "POST":
+        if current_user.id != id:
+            return jsonify({"error": "Unauthorized"}), 403
+            
+        field = request.form.get("field")
+        value = request.form.get("value")
+        
+        # Handle profile photo upload
+        if "photo" in request.files:
+            file = request.files["photo"]
+            if file and allowed_file(file.filename):
+                filename = secure_filename(str(user.id) + ".jpg")
+                file.save(path.join("website/static/images/profiles/", filename))
+                return jsonify({"success": True})
+                
+        # Handle other field updates
+        if field in ["name", "activities", "location", "age"]:
+            if field == "age":
+                try:
+                    value = int(value)
+                except ValueError:
+                    return jsonify({"error": "Invalid age value"}), 400
+            
+            setattr(user, field, value)
+            db.session.commit()
+            return jsonify({"success": True})
+            
+        return jsonify({"error": "Invalid field"}), 400
+
     profile_photo_path = str(user.id) + ".jpg"
-    # provide default photo path for profile if user has not uploaded
-    placeholderFlag = path.exists(
-        "website/static/images/profiles/" + profile_photo_path
-    )
+    placeholderFlag = path.exists("website/static/images/profiles/" + profile_photo_path)
+    
     return render_template(
         "profile.html",
         user=user,
         placeholderFlag=placeholderFlag,
         photoPath=profile_photo_path,
+        is_owner=current_user.is_authenticated and current_user.id == id
     )
+
+# Add this helper function
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
     
 # Campsite list views
 @views.route("/my-lists/", methods=["GET"])

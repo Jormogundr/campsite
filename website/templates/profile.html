@@ -1,38 +1,74 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
-<body>
-    <link rel="stylesheet" href="/static/styles/profile.css">
-        {% if placeholderFlag %}
-        <div id="profile-img-container">
-            <img id="profile-img"
-                src="{{ url_for('static', filename='images/profiles/' + photoPath)}}" />
-        </div>
-
-        {% else %}
-        <div id="profile-img-container">
-            <img id="profile-img"
-                src="{{ url_for('static', filename='images/profile_placeholder.svg')}}" />
-        </div>
-
-        {% endif %}
-
-
-        <aside id="profile-column">
-            <h1 id="profileNameTopHeading" class="userProfileName">
-                Welcome to {{ user.name }}'s profile
-            </h1>
-
-            <div id="profile-details">
-                <h3>About {{user.name}}</h3>
-                
-                <ul>
-                    <li>Favorite activities: {{user.activities}}</li>
-                    <li>Location: {{user.location}}</li>
-                    <li>Age: {{user.age}}</li>
-                </ul>
+{% extends "base.html" %}
+{% block title %}Profile - {{ user.name }}{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/static/styles/profile.css">
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-photo-section">
+            {% if is_owner %}
+            <form id="photo-upload-form" enctype="multipart/form-data">
+                <div class="profile-img-container">
+                    <img id="profile-img" 
+                         src="{{ url_for('static', filename='images/profiles/' + photoPath if placeholderFlag else 'images/profile_placeholder.svg') }}"
+                         alt="{{ user.name }}'s profile photo" />
+                    <div class="photo-overlay">
+                        <i class="fas fa-camera"></i>
+                        <span>Change Photo</span>
+                    </div>
+                </div>
+                <input type="file" id="photo-input" name="photo" accept="image/*" hidden>
+            </form>
+            {% else %}
+            <div class="profile-img-container">
+                <img id="profile-img"
+                     src="{{ url_for('static', filename='images/profiles/' + photoPath if placeholderFlag else 'images/profile_placeholder.svg') }}"
+                     alt="{{ user.name }}'s profile photo" />
             </div>
-        </aside>
+            {% endif %}
+        </div>
 
+        <div class="profile-info">
+            <h1 class="profile-name" {% if is_owner %}contenteditable="true"{% endif %} 
+                data-field="name">{{ user.name }}</h1>
+            
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="stat-value">{{ user.campsite_lists|length }}</span>
+                    <span class="stat-label">Lists</span>
+                </div>
+                <!-- Add more stats as needed -->
+            </div>
+        </div>
     </div>
-</body>
 
+    <div class="profile-details">
+        <h2>About</h2>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <i class="fas fa-hiking"></i>
+                <label>Activities</label>
+                <div class="detail-value" {% if is_owner %}contenteditable="true"{% endif %}
+                     data-field="activities">{{ user.activities or "Not specified" }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <label>Location</label>
+                <div class="detail-value" {% if is_owner %}contenteditable="true"{% endif %}
+                     data-field="location">{{ user.location or "Not specified" }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <i class="fas fa-birthday-cake"></i>
+                <label>Age</label>
+                <div class="detail-value" {% if is_owner %}contenteditable="true"{% endif %}
+                     data-field="age">{{ user.age or "Not specified" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if is_owner %}
+<script src="{{ url_for('static', filename='script/profile.js') }}"></script>
+{% endif %}
 {% endblock %}
