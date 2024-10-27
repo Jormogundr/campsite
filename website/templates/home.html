@@ -12,6 +12,47 @@
         bikepackers, trail runners, and more.</p>
 </div>
 
+<!-- Add dropdown for authenticated users -->
+{% if current_user.is_authenticated and user_lists %}
+<div class="campsite-list-selector"> 
+    <select id="campsite-list-selector" class="form-select" onchange="updateMapWithList(this.value)">
+        <option value="" {% if not request.args.get('list_id') %}selected{% endif %}>View All Campsites</option>
+        {% for list in user_lists %}
+        <option value="{{ list.id }}" {% if request.args.get('list_id')|string == list.id|string %}selected{% endif %}>
+            {{ list.name }}
+        </option>
+        {% endfor %}
+    </select>
+    Select a list to highlight in <span style="color: cyan;"> blue</span>
+</div>
+
+<!-- JavaScript initialization -->
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        CampSiteMapSingletonSingleton.initialize(() => {
+            CampSiteMapSingletonSingleton.addMarkers(
+                {{lats|tojson}}, 
+                {{lons|tojson}}, 
+                {{names|tojson}}, 
+                {{ids|tojson}},
+                {{in_selected_list|tojson}}
+            );
+        });
+    });
+
+    function updateMapWithList(listId) {
+        // Update URL and reload page
+        const url = new URL(window.location);
+        if (listId) {
+            url.searchParams.set('list_id', listId);
+        } else {
+            url.searchParams.delete('list_id');
+        }
+        window.location = url;
+    }
+</script>
+{% endif %}
+
 <!-- Map -->
 <div id="map-error-flash"></div>
 <link rel="stylesheet"
@@ -24,12 +65,13 @@
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin></script>
 <div align="center" id="map"></div>
+
 <script src="{{ url_for('static', filename='script/CampSite_map.js') }}"></script>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", () => {
         // Initialize map and add markers after initialization
-        campSiteMap.initialize(() => {
-            campSiteMap.addMarkers({{lats|tojson}}, {{lons|tojson}}, {{names|tojson}}, {{ids|tojson}});
+        campSiteMapSingleton.initialize(() => {
+            campSiteMapSingleton.addMarkers({{lats|tojson}}, {{lons|tojson}}, {{names|tojson}}, {{ids|tojson}});
         });
     });
 </script>

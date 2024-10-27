@@ -12,7 +12,7 @@ def get_all_campsites():
     campsite_names = [getattr(c, "name") for c in campsites]
     return campsite_lats, campsite_lons, campsite_ids, campsite_names
 
-def add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId):
+def commit_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId):
     new_campsite = CampSite(
         name=name,
         latitude=latitude,

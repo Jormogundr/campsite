@@ -1,21 +1,31 @@
-// CampSiteMap.js
-class CampSiteMap {
+// CampSiteMapSingleton.js
+class CampSiteMapSingleton {
     constructor() {
-        if (CampSiteMap.instance) {
-            return CampSiteMap.instance;
+        if (CampSiteMapSingleton.instance) {
+            return CampSiteMapSingleton.instance;
         }
         
-        // Constants
         this.DEFAULT_LAT = 39.0940394841749;
         this.DEFAULT_LON = -102.02316635857781;
         
         // Initialize map instance
         this.map = null;
-        this.markers = []; // Store markers for potential cleanup
+        this.markers = [];
         this.initialized = false;
         
+        // Create icons
+        this.defaultIcon = L.icon({
+            iconUrl: "/static/images/camps_icon.png",
+            iconSize: [36, 36],
+        });
+        
+        this.highlightedIcon = L.icon({
+            iconUrl: "/static/images/camps_icon_selected.png",
+            iconSize: [36, 36],
+        });
+        
         // Store instance
-        CampSiteMap.instance = this;
+        CampSiteMapSingleton.instance = this;
     }
 
     initialize(callback = null) {
@@ -72,7 +82,7 @@ class CampSiteMap {
     }
 
     // Populate the map with existing campsites.
-    addMarkers(lats, lons, names, ids) {
+    addMarkers(lats, lons, names, ids, inSelectedList) {
         // Clear existing markers if any
         this.markers.forEach(marker => {
             if (marker) {
@@ -81,17 +91,18 @@ class CampSiteMap {
         });
         this.markers = [];
 
-        const campIcon = L.icon({
-            iconUrl: "/static/images/camps_icon.png",
-            iconSize: [36, 36],
-        });
-
         for (let i = 0; i < lats.length; i++) {
-            const marker = L.marker([lats[i], lons[i]], { icon: campIcon }).addTo(this.map);
+            // Choose icon based on whether campsite is in selected list
+            const icon = inSelectedList[i] ? this.highlightedIcon : this.defaultIcon;
+            
+            const marker = L.marker([lats[i], lons[i]], { icon: icon }).addTo(this.map);
             const link = "/campsites/" + ids[i];
             
-            marker.bindPopup(
-                `<p align="center" style="font-weight:bold;font-size:x-large;padding-bottom:0;margin-bottom:0">
+            // Add a class to the marker element for potential CSS styling
+            marker.getElement().classList.add(inSelectedList[i] ? 'highlighted-marker' : 'default-marker');
+            
+            let popupContent = `
+                <p align="center" style="font-weight:bold;font-size:x-large;padding-bottom:0;margin-bottom:0">
                     ${names[i]}
                 </p>  
                 <br> 
@@ -101,8 +112,16 @@ class CampSiteMap {
                 <br> 
                 <a href="${link}">
                     <h6 align="center" style="padding-top:0.25em">View Details</h6>
-                </a>`
-            );
+                </a>`;
+
+            // Add indicator if campsite is in selected list
+            if (inSelectedList[i]) {
+                popupContent = `
+                    <div class="in-list-badge">In Selected List</div>
+                    ${popupContent}`;
+            }
+            
+            marker.bindPopup(popupContent);
             this.markers.push(marker);
         }
     }
@@ -131,4 +150,4 @@ class CampSiteMap {
 }
 
 // Create and export singleton instance
-const campSiteMap = new CampSiteMap();
+const CampSiteMapSingletonSingleton = new CampSiteMapSingleton();

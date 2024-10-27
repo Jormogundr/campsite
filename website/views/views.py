@@ -26,7 +26,29 @@ views = Blueprint("views", __name__)
 @views.route("/")
 def home():
     try:
+        # Get all campsites for the map
         campsite_lats, campsite_lons, campsite_ids, campsite_names = get_all_campsites()
+        
+        # Initialize variables for user's campsite lists
+        user_lists = None
+        list_campsites = set()  # Use a set for efficient lookups
+        selected_list_name = ""
+        
+        # If user is authenticated, get their campsite lists
+        if current_user.is_authenticated:
+            user_lists = CampSiteList.query.filter_by(user_id=current_user.id).all()
+            
+            # If a list is selected, get its campsites' IDs
+            selected_list_id = request.args.get('list_id')
+            if selected_list_id:
+                selected_list = CampSiteList.query.get(selected_list_id)
+                if selected_list and selected_list.user_id == current_user.id:
+                    list_campsites = {site.id for site in selected_list.campsites}
+                    selected_list_name = selected_list.name
+
+        # Create a list of boolean flags for whether each campsite is in the selected list
+        in_selected_list = [id in list_campsites for id in campsite_ids]
+        
         return render_template(
             "home.html",
             user=current_user,
@@ -34,10 +56,15 @@ def home():
             lons=campsite_lons,
             ids=campsite_ids,
             names=campsite_names,
+            user_lists=user_lists,
+            in_selected_list=in_selected_list,
+            selected_list_name=selected_list_name
         )
     except AssertionError:
         return render_template(
-            "error.html", user=current_user, msg="We were unable to populate the map."
+            "error.html", 
+            user=current_user, 
+            msg="We were unable to populate the map."
         )
 
 # Campsite views
@@ -67,7 +94,7 @@ def add_campsite():
         campsiteListId = request.form.get("campsiteList")
 
         try:
-            add_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId)
+            commit_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId)
             flash("Campsite added.", category="success")
             if campsitePhotoUploadSuccessful():
                 return redirect(url_for("views.add_campsite"))
@@ -289,6 +316,53 @@ def create_list():
         campsites=campsites
     )
 
+@views.route('/search/', methods=['GET', 'POST'])
+def search_campsites():
+    # Get all unique camping styles for the dropdown
+    camping_styles = db.session.query(CampSite.campingStyle).distinct().all()
+    camping_styles = [style[0] for style in camping_styles if style[0]]  # Remove None values
+    
+    query = CampSite.query
+    
+    if request.method == 'POST':
+        # Get search parameters
+        name = request.form.get('name', '').strip()
+        potable_water = request.form.get('potableWater')
+        electrical = request.form.get('electrical')
+        fire_pit = request.form.get('firePit')
+        back_country = request.form.get('backCountry')
+        permit_required = request.form.get('permitRequired')
+        camping_style = request.form.get('campingStyle')
+        min_rating = request.form.get('minRating')
+        
+        # Apply filters
+        if name:
+            query = query.filter(CampSite.name.ilike(f'%{name}%'))
+        if potable_water == 'true':
+            query = query.filter(CampSite.potableWater.is_(True))
+        if electrical == 'true':
+            query = query.filter(CampSite.electrical.is_(True))
+        if fire_pit == 'true':
+            query = query.filter(CampSite.firePit.is_(True))
+        if back_country == 'true':
+            query = query.filter(CampSite.backCountry.is_(True))
+        if permit_required == 'true':
+            query = query.filter(CampSite.permitRequired.is_(True))
+        if camping_style:
+            query = query.filter(CampSite.campingStyle == camping_style)
+        if min_rating:
+            query = query.filter(CampSite.rating >= float(min_rating))
+            
+        results = query.all()
+    else:
+        results = []
+    
+    return render_template('search.html',
+                         results=results,
+                         camping_styles=camping_styles,
+                         user=current_user
+                         )
+    
 
 @views.route("/filltables", methods=["GET"])
 def fillTables(FILL_TABLES=False):
