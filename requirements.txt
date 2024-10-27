@@ -1,6 +1,7 @@
 flask==2.3.3
 flask-login
 Flask-SQLAlchemy
+Flask-Migrate
 gunicorn==20.0.4
 pillow
 psycopg2-binary
