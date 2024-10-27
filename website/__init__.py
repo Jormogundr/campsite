@@ -56,10 +56,11 @@ def create_app():
     from .views.views import views
     from .auth import auth
 
+    # Blueprints TODO Remove this, since we are using our own MVC to organize the project
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
 
-    from .models.models import User, CampSite
+    from .models.models import User
 
     with app.app_context():
         db.create_all()

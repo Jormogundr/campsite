@@ -7,7 +7,7 @@ Create Date: 2024-10-27 14:35:19.833323
 """
 from alembic import op
 import sqlalchemy as sa
-from website.controllers.user import UserRole 
+from website.models.models import UserRole 
 
 
 # revision identifiers, used by Alembic.

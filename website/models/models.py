@@ -4,14 +4,18 @@ from .. import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
-from ..controllers.user import UserRole
-
 class ListVisibilityType(Enum):
     LIST_VISIBILITY_NONE = 0
     LIST_VISIBILITY_PRIVATE = 1
     LIST_VISIBILITY_PROTECTED = 2 # not used currently
     LIST_VISIBILITY_PUBLIC = 3
 
+class UserRole(Enum):
+    USER_ROLE_GUEST = 0
+    USER_ROLE_REGISTERED_FREE = 1
+    USER_ROLE_REGISTERED_FREE_PREMIUM = 2 # not used currently
+    USER_ROLE_MODERATOR = 3 # not used currently
+    USER_ROLE_ADMIN = 4
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'

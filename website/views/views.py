@@ -11,8 +11,7 @@ from dotenv import load_dotenv
 from .. import db
 from ..models.models import User, CampSite, CampSiteList
 
-from ..controllers.controllers import *
-from ..controllers.user import *
+from website.controllers.controllers import *
 
 load_dotenv()
 

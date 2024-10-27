@@ -9,6 +9,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_login import login_user, login_required, logout_user, current_user
 
+from website.models.models import UserRole
+
 
 load_dotenv()
 
@@ -81,13 +83,14 @@ def sign_up():
             flash("Location must contain alphabet characters.", category="error")
         elif request.files["profile_picture"] and not profilePhotoUpload():
             flash("There was a problem with your file.", category="error")
-        else:
+        else: # valid input
             new_user = User(
                 email=email,
                 name=name,
                 age=age,
                 location=location,
                 activities=activities,
+                role=UserRole.USER_ROLE_REGISTERED_FREE,
                 password=generate_password_hash(password1, method="sha256"),
             )
             db.session.add(new_user)
