@@ -4,6 +4,8 @@ from .. import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+from ..controllers.user import UserRole
+
 class ListVisibilityType(Enum):
     LIST_VISIBILITY_NONE = 0
     LIST_VISIBILITY_PRIVATE = 1
@@ -18,6 +20,7 @@ class User(db.Model, UserMixin):
 
     # A user can have multiple lists each with their own visibility
     campsite_lists = db.relationship("CampSiteList", back_populates="user")
+    role = db.Column(db.Enum(UserRole))
 
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150))

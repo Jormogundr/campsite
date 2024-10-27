@@ -44,7 +44,12 @@ def home():
 def addsite():
     lat = "Enter Latitude"
     lon = "Enter Longitude"
-    campsiteLists = get_user_campsite_lists(current_user.id)
+
+    campsiteLists = None
+    if not current_user.is_authenticated:
+            flash("Only registered users can submit a campsite", category="error")
+    else:
+        campsiteLists = get_user_campsite_lists(current_user.id)
 
     if request.method == "POST":
         name = request.form.get("name")

@@ -112,12 +112,41 @@
     }
 }
 
-/* Action links */
+.userProfileName {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #3498db;
+    font-weight: 600;
+}
+
 .action-link {
-    color: #4299e1;
+    color: #3498db;
     text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
 .action-link:hover {
-    text-decoration: underline;
+    color: #2980b9;
+    background-color: #f7f9fc;
+    text-decoration: none;
+}
+
+.action-link:active {
+    transform: translateY(1px);
+}
+
+/* Add some spacing between the links */
+.action-link + .action-link {
+    margin-left: 0.5rem;
+}
+
+/* Style the separator */
+h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
 }

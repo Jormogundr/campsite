@@ -1,65 +1,84 @@
-.dropdown {
-    position: relative;
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: white;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    padding: 0.4em 0.6em;
+    font-size: 0.75em;
+    border-radius: 0.25rem;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn {
     display: inline-block;
-}
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
     text-decoration: none;
+}
+
+.btn-primary {
+    color: white;
+    background-color: #007bff;
+    border: 1px solid #0056b3;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.table-responsive {
     display: block;
-}
-.dropdown-content a:hover {
-    background-color: #f1f1f1;
-}
-.dropdown:hover .dropdown-content {
-    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-#lists-img {
-  margin-top: 5vh;
-  max-width: 30vw;
-  max-height: 30vh;
-  padding: 0.26%;
-  border: #000000;
-  border-top-left-radius: 50% 50%;
-  border-top-right-radius: 50% 50%;
-  border-bottom-right-radius: 50% 50%;
-  border-bottom-left-radius: 50% 50%;
-  margin: auto;
-  display: block;
+.alert {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
 }
 
-#lists-column {
-  height: auto;
-  width: 59vw;
-  margin: auto;
-  margin-top: 3em;
-  text-align: center;
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
 }
 
-#lists-details {
-  margin-top: 5vh;
-}
-
-ul {
-  list-style: none;
-}
-ul li::before {
-  content: "";
-  background-image: url(../images/favicon.png);
-  background-size: contain;
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  position: relative;
-  top: 0.1rem;
-  margin-right: 0.5rem;
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
 }

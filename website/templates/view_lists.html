@@ -1,16 +1,60 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}Home{% endblock %} 
+
+{% block content %}
 <body>
     <link rel="stylesheet" href="/static/styles/view_lists.css">
 
     <h1 id="profileNameTopHeading" class="userProfileName">
-            My CampSite Lists
+        My CampSite Lists
     </h1>
 
-    <ul>
-    {% for item in campsiteLists %}
-        <li>Campsite list name: <a href="{{ url_for('views.view_campsiteList', id=item.id) }}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>List Name</th>
+                    <th>Visibility</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in campsiteLists %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>
+                        {% set visibility_class = {
+                            'LIST_VISIBILITY_NONE': 'badge-secondary',
+                            'LIST_VISIBILITY_PRIVATE': 'badge-secondary',
+                            'LIST_VISIBILITY_PROTECTED': 'badge-warning',
+                            'LIST_VISIBILITY_PUBLIC': 'badge-success'
+                        } %}
+                        {% set visibility_text = {
+                            'LIST_VISIBILITY_NONE': 'None',
+                            'LIST_VISIBILITY_PRIVATE': 'Private',
+                            'LIST_VISIBILITY_PROTECTED': 'Protected',
+                            'LIST_VISIBILITY_PUBLIC': 'Public'
+                        } %}
+                        <span class="badge {{ visibility_class[item.visibility.name] }}">
+                            {{ visibility_text[item.visibility.name] }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('views.view_campsiteList', id=item.id) }}" 
+                           class="btn btn-primary btn-sm">
+                            View List
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
+    {% if not campsiteLists %}
+    <div class="alert alert-info" role="alert">
+        You haven't created any campsite lists yet.
+    </div>
+    {% endif %}
 </body>
 {% endblock %}
