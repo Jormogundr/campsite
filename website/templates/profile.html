@@ -31,15 +31,24 @@
             <h1 class="profile-name" {% if is_owner %}contenteditable="true"{% endif %} 
                 data-field="name">{{ user.name }}</h1>
             
-            <div class="profile-stats">
-                <div class="stat">
-                    <span class="stat-value">{{ user.campsite_lists|length }}</span>
-                    <span class="stat-label">Lists</span>
+            <div class="profile-meta">
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ user.campsite_lists|length }}</span>
+                        <span class="stat-label">Lists</span>
+                    </div>
+                    <!-- Add more stats as needed -->
                 </div>
-                <!-- Add more stats as needed -->
+                
+                <div class="profile-actions">
+                    <a href="/view-lists">
+                        <button type="view-lists" class="btn btn-primary">View Lists</button>
+                    </a>
+                    <a href="/create-list">
+                        <button type="create-list" class="btn btn-secondary">Create List</button>
+                    </a>
+                </div>
             </div>
-
-            
         </div>
     </div>
 
