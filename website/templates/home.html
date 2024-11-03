@@ -5,13 +5,7 @@
 <link rel="stylesheet" href="static/styles/home.css">
 
 <div id="welcome-banner">
-    <span id="close" onclick="this.parentNode.remove(); return false;">x</span>
-    <h1 id="welcome">Welcome to CampSite</h1>
-    <p id="welcome-message">For the outdoors enthusiast -- never again lose
-        track of your favorite publically accessible outdoor recreation
-        campsites! Built for the backpackers, hunters, fishermen,
-        off-roaders,
-        bikepackers, trail runners, and more.</p>
+    <!-- ... welcome banner content ... -->
 </div>
 
 <!-- Map dependencies -->
@@ -26,10 +20,6 @@
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-
-<!-- Map container -->
-<div id="map-error-flash"></div>
-<div align="center" id="map"></div>
 
 <!-- Add dropdown for authenticated users -->
 {% if current_user.is_authenticated and user_lists %}
@@ -46,9 +36,14 @@
 </div>
 {% endif %}
 
+<!-- Map container -->
+<div id="map-error-flash"></div>
+<div align="center" id="map"></div>
+
 <!-- Map initialization -->
-<script src="{{ url_for('static', filename='script/CampSite_map.js') }}"></script>
-<script>
+<script type="module">
+    import { campSiteMapSingleton } from "{{ url_for('static', filename='script/CampSite_map.js') }}";
+
     // Store the Jinja data as a global variable
     const mapData = {
         lats: {{ lats|tojson }},
@@ -61,11 +56,6 @@
     // Wait for DOM and scripts to load
     document.addEventListener("DOMContentLoaded", () => {
         console.log("DOM loaded, initializing map...");
-        
-        if (typeof campSiteMapSingleton === 'undefined') {
-            console.error("Map singleton not loaded!");
-            return;
-        }
 
         // Initialize map and add markers after initialization
         campSiteMapSingleton.initialize(() => {
@@ -82,7 +72,8 @@
         });
     });
 
-    function updateMapWithList(listId) {
+    // Make updateMapWithList available globally
+    window.updateMapWithList = function(listId) {
         // Update URL and reload page
         const url = new URL(window.location);
         if (listId) {
@@ -91,7 +82,7 @@
             url.searchParams.delete('list_id');
         }
         window.location = url;
-    }
+    };
 </script>
 
 {% endblock %}
