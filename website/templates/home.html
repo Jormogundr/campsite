@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
 
 <link rel="stylesheet" href="static/styles/home.css">
 
@@ -11,6 +13,23 @@
         off-roaders,
         bikepackers, trail runners, and more.</p>
 </div>
+
+<!-- Map dependencies -->
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/map.css') }}" />
+<link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin />
+
+<!-- Scripts needed before map initialization -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+<!-- Map container -->
+<div id="map-error-flash"></div>
+<div align="center" id="map"></div>
 
 <!-- Add dropdown for authenticated users -->
 {% if current_user.is_authenticated and user_lists %}
@@ -25,17 +44,40 @@
     </select>
     Select a list to highlight in <span style="color: cyan;"> blue</span>
 </div>
+{% endif %}
 
-<!-- JavaScript initialization -->
-<script type="text/javascript">
+<!-- Map initialization -->
+<script src="{{ url_for('static', filename='script/CampSite_map.js') }}"></script>
+<script>
+    // Store the Jinja data as a global variable
+    const mapData = {
+        lats: {{ lats|tojson }},
+        lons: {{ lons|tojson }},
+        names: {{ names|tojson }},
+        ids: {{ ids|tojson }},
+        inSelectedList: {{ in_selected_list|tojson if in_selected_list is defined else []|tojson }}
+    };
+
+    // Wait for DOM and scripts to load
     document.addEventListener("DOMContentLoaded", () => {
-        CampSiteMapSingletonSingleton.initialize(() => {
-            CampSiteMapSingletonSingleton.addMarkers(
-                {{lats|tojson}}, 
-                {{lons|tojson}}, 
-                {{names|tojson}}, 
-                {{ids|tojson}},
-                {{in_selected_list|tojson}}
+        console.log("DOM loaded, initializing map...");
+        
+        if (typeof campSiteMapSingleton === 'undefined') {
+            console.error("Map singleton not loaded!");
+            return;
+        }
+
+        // Initialize map and add markers after initialization
+        campSiteMapSingleton.initialize(() => {
+            console.log("Map initialized, adding markers...");
+            console.log("Marker data:", mapData);
+            
+            campSiteMapSingleton.addMarkers(
+                mapData.lats,
+                mapData.lons,
+                mapData.names,
+                mapData.ids,
+                mapData.inSelectedList
             );
         });
     });
@@ -50,30 +92,6 @@
         }
         window.location = url;
     }
-</script>
-{% endif %}
-
-<!-- Map -->
-<div id="map-error-flash"></div>
-<link rel="stylesheet"
-    href="{{ url_for('static', filename='styles/map.css') }}" />
-<link rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-    crossorigin />
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-    crossorigin></script>
-<div align="center" id="map"></div>
-
-<script src="{{ url_for('static', filename='script/CampSite_map.js') }}"></script>
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", () => {
-        // Initialize map and add markers after initialization
-        campSiteMapSingleton.initialize(() => {
-            campSiteMapSingleton.addMarkers({{lats|tojson}}, {{lons|tojson}}, {{names|tojson}}, {{ids|tojson}});
-        });
-    });
 </script>
 
 {% endblock %}

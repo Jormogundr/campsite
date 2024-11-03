@@ -7,11 +7,13 @@ from flask import jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
+import traceback
 
 from .. import db
 from ..models.models import User, CampSite, CampSiteList
 
 from website.controllers.controllers import *
+from website.extensions import socketio
 
 load_dotenv()
 
@@ -80,34 +82,74 @@ def add_campsite():
         campsiteLists = get_user_campsite_lists(current_user.id)
 
     if request.method == "POST":
-        name = request.form.get("name")
-        description = request.form.get("description")
-        campingStyle = request.form.get("campingStyle")
-        hasPotable = True if request.form.get("potable") == "on" else False
-        hasElectrical = True if request.form.get("electrical") == "on" else False
-        isBackcountry = True if request.form.get("backcountry") == "on" else False
-        isPermitReq = True if request.form.get("permitReq") == "on" else False
-        firePit = True if request.form.get("firePit") == "on" else False
-        submittedBy = User.query.filter_by(id=current_user.id).first()
-        latitude = float(request.form.get("latitude"))
-        longitude = float(request.form.get("longitude"))
-        campsiteListId = request.form.get("campsiteList")
-
+        
+        # Commit the form contents to the DB and handle WebSocket event
         try:
-            commit_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId)
+            name = request.form.get("name")
+            description = request.form.get("description")
+            campingStyle = request.form.get("campingStyle")
+            hasPotable = request.form.get("potable") == "on"
+            hasElectrical = request.form.get("electrical") == "on"
+            isBackcountry = request.form.get("backcountry") == "on"
+            isPermitReq = request.form.get("permitReq") == "on"
+            firePit = request.form.get("firePit") == "on"
+            submittedBy = User.query.filter_by(id=current_user.id).first()
+            latitude = float(request.form.get("latitude"))
+            longitude = float(request.form.get("longitude"))
+            campsiteListId = request.form.get("campsiteList")
+
+            # Commit the campsite first
+            new_campsite = commit_campsite(
+                name, latitude, longitude, hasPotable, hasElectrical, 
+                description, isBackcountry, isPermitReq, campingStyle, 
+                firePit, submittedBy, campsiteListId
+            )
             flash("Campsite added.", category="success")
+
+            # Emit the WebSocket event
+            try:
+                print("Attempting to emit WebSocket event...")
+                socketio.emit('map_update', {
+                    'type': 'new_campsite',
+                    'campsite': {
+                        'id': new_campsite.id,  
+                        'name': name,
+                        'latitude': latitude,
+                        'longitude': longitude
+                    }
+                }, broadcast=True)
+                print("WebSocket event emitted successfully")
+            except Exception as websocket_error:
+                print(f"WebSocket error: {str(websocket_error)}")
+                print(f"Traceback: {traceback.format_exc()}")
+
             if campsitePhotoUploadSuccessful():
                 return redirect(url_for("views.add_campsite"))
-        except:
+
+        except Exception as e:
+            print(f"Error in add_campsite: {str(e)}")
+            print(f"Traceback: {traceback.format_exc()}")
             flash("An error occurred when committing this form to a database entry.", category="error")
 
     if request.method == "GET":
         lat = request.args.get("lat") if request.args.get("lat") else ""
         lon = request.args.get("lon") if request.args.get("lon") else ""
         if lat and lon:
-            return render_template("add_site.html", user=current_user, lat=lat, lon=lon, campsiteLists=campsiteLists)
+            return render_template(
+                "add_site.html", 
+                user=current_user, 
+                lat=lat, 
+                lon=lon, 
+                campsiteLists=campsiteLists
+            )
 
-    return render_template("add_site.html", user=current_user, lat=lat, lon=lon, campsiteLists=campsiteLists)
+    return render_template(
+        "add_site.html", 
+        user=current_user, 
+        lat=lat, 
+        lon=lon, 
+        campsiteLists=campsiteLists
+    )
 
 @views.route("/campsites/<int:id>", methods=["GET", "POST"])
 def show_campsite(id):

@@ -150,4 +150,4 @@ class CampSiteMapSingleton {
 }
 
 // Create and export singleton instance
-const CampSiteMapSingletonSingleton = new CampSiteMapSingleton();
+const campSiteMapSingleton = new CampSiteMapSingleton();
