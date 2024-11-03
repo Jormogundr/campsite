@@ -34,17 +34,17 @@
         <div id="dropdown">
             <label for="campingStyle" style="font-weight:bold">How did you camp?</label>
             <select name="campingStyle" id="campingStyle">
-                <option value="tent">Tent</option>
-                <option value="bivy">Bivy</option>
-                <option value="hammock">Hammock</option>
-                <option value="bushcraft">Bushcraft</option>
-                <option value="car">Car</option>
-                <option value="rv">RV</option>
-                <option value="trailer">Trailer</option>
-                <option value="offroad">Offroad</option>
-                <option value="cabin">Cabin</option>
-                <option value="yurt">Yurt</option>
-                <option value="leanto">Lean-to</option>
+                <option value="Tent">Tent</option>
+                <option value="Bivy">Bivy</option>
+                <option value="Hammock">Hammock</option>
+                <option value="Bushcraft">Bushcraft</option>
+                <option value="Car">Car</option>
+                <option value="RV">RV</option>
+                <option value="Trailer">Trailer</option>
+                <option value="Offroad">Offroad</option>
+                <option value="Cabin">Cabin</option>
+                <option value="Yurt">Yurt</option>
+                <option value="Lean-to">Lean-to</option>
             </select>
         </div>
 
@@ -87,6 +87,7 @@
         <div>
         <label for="campsiteList"><b>Add to list:</b></label>
             <select id="campsiteList" name="campsiteList">
+                <option value="None">None</option>
                 {% for campsite in campsiteLists %}
                 <option value="{{ campsite.id }}">{{ campsite.name }}</option>
                 {% endfor %}

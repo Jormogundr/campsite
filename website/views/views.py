@@ -96,7 +96,7 @@ def add_campsite():
             submittedBy = User.query.filter_by(id=current_user.id).first()
             latitude = float(request.form.get("latitude"))
             longitude = float(request.form.get("longitude"))
-            campsiteListId = request.form.get("campsiteList")
+            campsiteListId = None if request.form.get("campsiteList") == "None" else request.form.get("campsiteList")
 
             # Commit the campsite first
             new_campsite = commit_campsite(

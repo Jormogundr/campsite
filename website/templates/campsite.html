@@ -1,108 +1,174 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
-<body>
-    <link rel="stylesheet" href="/static/styles/campsite.css">
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='styles/map.css') }}" />
-    <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.js"
-        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-        crossorigin="anonymous"></script>
+{% extends "base.html" %}
+{% block title %}{{ campsite.name }}{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/static/styles/campsite.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 
-    <div id="campsite-left-column">
-        <div id="map-zoomed">
-            <script
-                src="{{ url_for('static', filename='script/map_zoomed.js') }}"></script>
-            <script type="text/javascript">addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})</script>
+<div class="campsite-container">
+    <div class="campsite-header">
+        <h1>{{ campsite.name }}</h1>
+        <div class="campsite-meta">
+            <div class="rating-badge">
+                <span class="rating-value">{{ "%.1f"|format(campsite.rating) }}</span>
+                <div class="rating-stars">
+                    {% for i in range(5) %}
+                    <img src="{{ url_for('static',filename='images/star_' + ('filled' if i < campsite.rating else 'empty') + '.png') }}"
+                        width="20" height="20" alt="star" class="star-small">
+                    {% endfor %}
+                </div>
+                <span class="rating-count">({{ campsite.numRatings }} ratings)</span>
+            </div>
+            <div class="location-badge">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ locale.city }}, {{ locale.country }}
+            </div>
+            <div class="submitted-by">
+                Submitted by <a href="/profile/{{submitted_by.id}}">{{submitted_by.name}}</a>
+            </div>
         </div>
-
-        {% if placeholder %}
-        <div id="campsite-img-container">
-            <img id="campsite-img"
-                src="{{ url_for('static', filename='images/campsites/' + photo_path)}}" />
-        </div>
-        
-        {% else %}
-        <div id="campsite-img-container">
-            <img id="campsite-img"
-                src="{{ url_for('static', filename='images/camps_placeholder.png')}}" />
-        </div>
-
-        {% endif %}
-
     </div>
 
-    <aside id="campsite-right-column">
-        <h1 id="campsite-right-column-title">
-            {{ campsite.name }}
-        </h1>
-        <p>CampSite submitted by <a href="/profile/{{submitted_by.id}}">{{submitted_by.name}}</p></a>
-
-        <div id="campsite-details">
-            <h3>Location</h3>
-            <p>{{ campsite.name }} is a campsite in the {{ locale.country }},
-                near
-                {{locale.city}}. It's a great location for
-                {{campsite.campingStyle}}-style camping! <a
-                    href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k"
-                    target="_blank">View on Google Maps</a>. </p>
-
-            <div id="campsite-details-user-description">
-                <h4>
-                    Description
-                </h4>
-                <p style="display:block">{{campsite.description}}</p>
+    <div class="campsite-content">
+        <div class="content-main">
+            {% if placeholder %}
+            <div class="campsite-image">
+                <img src="{{ url_for('static', filename='images/campsites/' + photo_path)}}" alt="{{ campsite.name }}" />
             </div>
-
-            <div class="campsite-details-list-container">
-                <ul>
-                    <li>Coordinates (lat, lon): {{campsite.latitude}},
-                        {{campsite.longitude}}</li>
-                    <li>Has potable water source: {{ campsite.potableWater }}</li>
-                    <li>Has electrical outlets: {{ campsite.electrical}}</li>
-                    <li>Has firepit: {{campsite.firePit}}</li>
-                    <li>Is road accessible: {{campsite.backCountry}}</li>
-                    <li>Requires permit: {{campsite.permitRequired}}</li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="campsite-rating">
-            <script src="{{ url_for('static',filename='script/rate.js') }}"></script>
-            <h3>Rating</h3>
-            <p>{{campsite.rating}} stars from {{campsite.numRatings}} ratings.</p>
-            {% for i in range(5) %}
-            {% if i < campsite.rating %}
-            <img
-                src="{{ url_for('static',filename='images/star_filled.png') }}"
-                width="50" height="50" id="star_{{i}}" class="star">
             {% else %}
-            <img
-                src="{{ url_for('static',filename='images/star_empty.png') }}"
-                width="50" height="50" id="star_{{i}}" class="star">
+            <div class="campsite-image">
+                <img src="{{ url_for('static', filename='images/camps_placeholder.png')}}" alt="Placeholder image" />
+            </div>
             {% endif %}
-            {% endfor %}
-            <div>
-                {% if user.is_authenticated %}
-                <form method='POST' action>
-                    <input type="hidden" id="rating_content" name='rating'
-                        value='0'>
-                    <input type="submit" id="submitbtn"
-                        class="btn btn-primary mt-2"
-                        value="Submit my Rating">
-                </form>
-                {% else %}
-                <p>Only registered users can rate campsites.</p>
-                {% endif %}
+
+            <div class="campsite-description">
+                <h2>About this campsite</h2>
+                <p>{{ campsite.description }}</p>
+            </div>
+
+            <div class="amenities-grid">
+                <div class="amenity-item {% if campsite.potableWater %}active{% else %}inactive{% endif %}">
+                    <i class="fas fa-tint"></i>
+                    <span class="amenity-label">Potable Water</span>
+                    <span class="amenity-status">
+                        {% if campsite.potableWater %}
+                        <i class="fas fa-check-circle status-icon"></i>
+                        {% else %}
+                        <i class="fas fa-times-circle status-icon"></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="amenity-item {% if campsite.electrical %}active{% else %}inactive{% endif %}">
+                    <i class="fas fa-bolt"></i>
+                    <span class="amenity-label">Electrical Outlets</span>
+                    <span class="amenity-status">
+                        {% if campsite.electrical %}
+                        <i class="fas fa-check-circle status-icon"></i>
+                        {% else %}
+                        <i class="fas fa-times-circle status-icon"></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="amenity-item {% if campsite.firePit %}active{% else %}inactive{% endif %}">
+                    <i class="fas fa-fire"></i>
+                    <span class="amenity-label">Fire Pit</span>
+                    <span class="amenity-status">
+                        {% if campsite.firePit %}
+                        <i class="fas fa-check-circle status-icon"></i>
+                        {% else %}
+                        <i class="fas fa-times-circle status-icon"></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="amenity-item {% if campsite.backCountry %}active{% else %}inactive{% endif %}">
+                    <i class="fas fa-road"></i>
+                    <span class="amenity-label">Road Access</span>
+                    <span class="amenity-status">
+                        {% if campsite.backCountry %}
+                        <i class="fas fa-check-circle status-icon"></i>
+                        {% else %}
+                        <i class="fas fa-times-circle status-icon"></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="amenity-item {% if campsite.permitRequired %}active{% else %}inactive{% endif %}">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span class="amenity-label">Permit Required</span>
+                    <span class="amenity-status">
+                        {% if campsite.permitRequired %}
+                        <i class="fas fa-check-circle status-icon"></i>
+                        {% else %}
+                        <i class="fas fa-times-circle status-icon"></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="amenity-item camping-style">
+                    <i class="fas fa-campground"></i>
+                    <span class="amenity-label">{{ campsite.campingStyle }}</span>
+                </div>
             </div>
         </div>
-    </aside>
 
-</body>
+        <div class="sidebar-content">
+            <div class="map-card">
+                <div id="map-zoomed"></div>
+                <div class="map-footer">
+                    <div class="coordinates">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ campsite.latitude }}, {{ campsite.longitude }}
+                    </div>
+                    <a href="https://www.google.com/maps?t=k&q=loc:{{campsite.latitude}},{{campsite.longitude}}&ll={{campsite.latitude}},{{campsite.longitude}},t=k"
+                        target="_blank" class="btn btn-outline">View on Google Maps</a>
+                </div>
+            </div>
 
+           <div class="rating-section">
+                <script src="{{ url_for('static',filename='script/rate.js') }}"></script>
+                <h3>Rate this campsite</h3>
+                
+                {% if campsite.numRatings == 0 %}
+                    <p>Be the first to rate this campsite!</p>
+                {% else %}
+                    <p>{{campsite.rating}} stars from {{campsite.numRatings}} ratings.</p>
+                {% endif %}
+                
+                {% for i in range(5) %}
+                {% if i < campsite.rating %}
+                <img
+                    src="{{ url_for('static',filename='images/star_filled.png') }}"
+                    width="50" height="50" id="star_{{i}}" class="star">
+                {% else %}
+                <img
+                    src="{{ url_for('static',filename='images/star_empty.png') }}"
+                    width="50" height="50" id="star_{{i}}" class="star">
+                {% endif %}
+                {% endfor %}
+                <div>
+                    {% if user.is_authenticated %}
+                    <form method='POST' action>
+                        <input type="hidden" id="rating_content" name='rating'
+                            value='0'>
+                        <input type="submit" id="submitbtn"
+                            class="btn btn-primary mt-2"
+                            value="Submit my Rating">
+                    </form>
+                    {% else %}
+                    <p>Only registered users can rate campsites.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='script/map_zoomed.js') }}"></script>
+<script type="text/javascript">
+    addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})
+</script>
 {% endblock %}

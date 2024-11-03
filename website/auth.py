@@ -14,9 +14,6 @@ from website.models.models import UserRole
 
 load_dotenv()
 
-# load env vars defined in .env
-PROFILE_PHOTO_UPLOAD_PATH = getenv("PROFILE_PHOTO_UPLOAD_PATH")
-ALLOWED_EXTENSIONS = getenv("ALLOWED_EXTENSIONS")
 auth = Blueprint("auth", __name__)
 
 
