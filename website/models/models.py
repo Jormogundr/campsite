@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     role = db.Column(db.Enum(UserRole))
 
     email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150))
+    password = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(150), unique=True, nullable=False)
     activities = db.Column(db.String(200))
     location = db.Column(db.String(150))
