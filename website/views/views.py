@@ -644,7 +644,7 @@ def fillTables(FILL_TABLES=False):
             age=age,
             location=location,
             activities=activity,
-            password=generate_password_hash(password, method="sha256"),
+            password=generate_password_hash(password, method="scrypt"),
         )
 
         db.session.add(new_user)

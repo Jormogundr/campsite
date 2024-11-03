@@ -90,7 +90,7 @@ def fill_tables(emails, passwords, user_names, activities, locations, ages, name
             age=age,
             location=location,
             activities=activity,
-            password=generate_password_hash(password, method="sha256"),
+            password=generate_password_hash(password, method="scrypt"),
         )
         db.session.add(new_user)
     

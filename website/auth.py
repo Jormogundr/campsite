@@ -88,7 +88,7 @@ def sign_up():
                 location=location,
                 activities=activities,
                 role=UserRole.USER_ROLE_REGISTERED_FREE,
-                password=generate_password_hash(password1, method="sha256"),
+                password=generate_password_hash(password1, method="scrypt"),
             )
             db.session.add(new_user)
             db.session.commit()
