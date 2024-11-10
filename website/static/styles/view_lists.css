@@ -82,3 +82,16 @@
     background-color: #ffc107;
     color: #212529;
 }
+
+.remove-collaborator {
+    padding: 0 6px;
+    margin-left: 8px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.collaborator-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}

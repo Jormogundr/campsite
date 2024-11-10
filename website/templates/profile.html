@@ -34,10 +34,13 @@
             <div class="profile-meta">
                 <div class="profile-stats">
                     <div class="stat">
-                        <span class="stat-value">{{ user.campsite_lists|length }}</span>
+                        <span class="stat-value">{{ user.owned_campsite_lists|length }}</span>
                         <span class="stat-label">Lists</span>
                     </div>
-                    <!-- Add more stats as needed -->
+                    <div class="stat">
+                        <span class="stat-value">{{ collaborated_list_count }}</span>
+                        <span class="stat-label">Collabs</span>
+                    </div>
                 </div>
                 
                 <div class="profile-actions">

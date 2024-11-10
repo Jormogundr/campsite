@@ -2,8 +2,11 @@ import os
 
 from flask import Flask
 from .config import Config
-from .extensions import db, migrate, login_manager, socketio
+from .extensions import db, migrate, login_manager, socketio, mail
 from .models.models import User
+
+from dotenv import load_dotenv
+load_dotenv() 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -14,6 +17,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     socketio.init_app(app, cors_allowed_origins="*")
+    mail.init_app(app)
     
     # Configure login
     login_manager.login_view = "auth.login"

@@ -19,7 +19,15 @@ class UserRole(Enum):
 class ListPermissionType(Enum):
     PERMISSION_READ = 1
     PERMISSION_WRITE = 2
-    PERMISSION_ADMIN = 3  # Can modify permissions
+    PERMISSION_ADMIN = 3
+
+    @property
+    def display_name(self):
+        return {
+            ListPermissionType.PERMISSION_READ: "View",
+            ListPermissionType.PERMISSION_WRITE: "Edit",
+            ListPermissionType.PERMISSION_ADMIN: "Admin"
+        }[self]
 
 # Association table for shared list permissions
 list_permissions = db.Table('list_permissions',

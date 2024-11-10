@@ -3,6 +3,7 @@ flask-login
 Flask-SQLAlchemy
 Flask-Migrate
 flask-socketio
+flask_mail
 gunicorn==20.0.4
 pillow
 psycopg2-binary

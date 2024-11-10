@@ -4,6 +4,7 @@
 {% block content %}
 <body>
     <link rel="stylesheet" href="/static/styles/view_lists.css">
+    <script src="{{ url_for('static', filename='script/view_lists.js') }}"></script>
 
     <h1 id="profileNameTopHeading" class="userProfileName">
         My CampSite Lists
@@ -16,6 +17,7 @@
                     <th>List Name</th>
                     <th>Visibility</th>
                     <th>Actions</th>
+                    <th>Collaborators</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,6 +46,29 @@
                            class="btn btn-primary btn-sm">
                             View List
                         </a>
+                    </td>
+                    <td>
+                        {% if lists_collaborators[item.id] %}  <!-- Changed from campsite_list to item -->
+                            <p>Shared with:</p>
+                            <ul>
+                            {% for shared_user, permission_type in lists_collaborators[item.id] %}
+                                <li>
+                                    <a href="{{ url_for('views.profile', id=shared_user.id) }}">{{ shared_user.name }}</a>
+                                    ({{ permission_type.name }})
+                                    <button 
+                                        class="btn btn-danger btn-sm remove-collaborator" 
+                                        data-list-id="{{ item.id }}" 
+                                        data-user-id="{{ shared_user.id }}"
+                                        title="Remove collaborator"
+                                    >
+                                        X
+                                    </button>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Not shared with anyone</p>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

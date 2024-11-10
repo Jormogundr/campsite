@@ -17,6 +17,8 @@ from ..models.models import User, CampSite, CampSiteList, ListPermissionType
 from website.controllers.controllers import *
 from website.extensions import socketio
 
+from website.controllers.notifications import collaboration_notifier
+
 load_dotenv()
 
 # load env vars defined in .env
@@ -222,13 +224,20 @@ def profile(id):
 
     profile_photo_path = str(user.id) + ".jpg"
     placeholderFlag = path.exists("website/static/images/profiles/" + profile_photo_path)
+
+    collaborated_list_count = db.session.query(CampSiteList)\
+        .join(list_permissions)\
+        .filter(CampSiteList.owner_id == user.id)\
+        .distinct(CampSiteList.id)\
+        .count()
     
     return render_template(
         "profile.html",
         user=user,
         placeholderFlag=placeholderFlag,
         photoPath=profile_photo_path,
-        is_owner=current_user.is_authenticated and current_user.id == id
+        is_owner=current_user.is_authenticated and current_user.id == id,
+        collaborated_list_count=collaborated_list_count
     )
 
 # Add this helper function
@@ -253,12 +262,44 @@ def view_user_campsitLists():
     """
     user_id = current_user.id
     campsiteLists = get_user_campsite_lists(user_id)
+
+    # Map the logged in user lists with their shared users
+    lists_collaborators = {}
+
+    for campsite_list in campsiteLists:
+        # Get all users this list is shared with, along with their permission types and store as tuple
+        shared_users = db.session.query(User, list_permissions.c.permission_type)\
+            .join(list_permissions, User.id == list_permissions.c.user_id)\
+            .filter(list_permissions.c.list_id == campsite_list.id)\
+            .all()
+            
+        lists_collaborators[campsite_list.id] = shared_users
     
     return render_template(
         "view_lists.html",
         user=current_user,
         campsiteLists=campsiteLists,
+        lists_collaborators=lists_collaborators
     )
+
+@views.route("/remove-collaborator/<int:list_id>/<int:user_id>", methods=["POST"])
+@login_required
+def remove_collaborator(list_id, user_id):
+    """Remove a collaborator from a campsite list"""
+    campsite_list = CampSiteList.query.get_or_404(list_id)
+    
+    # Check if current user is the owner
+    if campsite_list.owner_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    user_to_remove = User.query.get_or_404(user_id)
+    
+    try:
+        campsite_list.remove_collaborator(user_to_remove)
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 @views.route("/campsite-lists/<int:list_id>/rename", methods=["POST"])
 @login_required
@@ -272,7 +313,7 @@ def rename_campsite_list(list_id):
     campsite_list = CampSiteList.query.get_or_404(list_id)
     
     # Check if user owns this list
-    if campsite_list.user_id != current_user.id:
+    if campsite_list.owner_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
         
     campsite_list.name = new_name
@@ -282,14 +323,14 @@ def rename_campsite_list(list_id):
 
 @views.route("/campsite-lists/<int:list_id>/collaborate", methods=["POST"])
 @login_required
-def collab_campsite_list(list_id) -> Tuple[Dict[str, Union[str, bool]], int]:
+def collab_campsite_list(list_id):  # Remove return type annotation
     data = request.get_json()
     email = data.get('email', '').strip()
     
     # Validation chain
     validation_result = validate_collab_request(email, list_id)
     if validation_result:
-        # invalid if not None
+        # Invalid if not None
         return validation_result
     
     try:
@@ -307,6 +348,13 @@ def collab_campsite_list(list_id) -> Tuple[Dict[str, Union[str, bool]], int]:
                 'error': 'Failed to set user permissions',
                 'details': 'The system could not grant write access to the user.'
             }), 500
+        
+        # Send email to the other user
+        collaboration_notifier.notify_new_collaborator(
+            owner=current_user,
+            collaborator=other_user,
+            campsite_list=campsite_list
+        )
             
         db.session.commit()
         return jsonify({
