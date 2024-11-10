@@ -5,7 +5,6 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
-    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH")) * 1 * 1024 # 1 MB
     
     # Database configuration
     DATABASE_URL = os.getenv("DATABASE_URL")
@@ -36,3 +35,9 @@ class Config:
     MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER=('Campsite App', 'nathancp93@gmail.com')
     SITE_URL=os.getenv('SITE_URL')
+
+    # Photos
+    CAMPSITE_PHOTO_UPLOAD_PATH = os.getenv("CAMPSITE_PHOTO_UPLOAD_PATH")
+    PROFILE_PHOTO_UPLOAD_PATH = os.getenv("PROFILE_PHOTO_UPLOAD_PATH")
+    ALLOWED_EXTENSIONS = os.getenv("ALLOWED_EXTENSIONS")
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH")) * 1 * 1024 # 1 MB

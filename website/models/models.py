@@ -59,6 +59,21 @@ class User(db.Model, UserMixin):
     location = db.Column(db.String(150))
     age = db.Column(db.Integer)
 
+    photo = db.relationship('UserPhoto', back_populates='user', 
+                          cascade='all, delete-orphan', 
+                          uselist=False)
+
+class UserPhoto(db.Model):
+    __tablename__ = 'user_photos'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    caption = db.Column(db.String(200))
+    upload_date = db.Column(db.DateTime, default=func.now())
+    
+    user = db.relationship('User', back_populates='photo')
+
 class CampSiteList(db.Model):
     __tablename__ = 'campsite_lists'
 
@@ -113,6 +128,9 @@ class CampSite(db.Model):
     campsite_list_id = db.Column(db.Integer, db.ForeignKey('campsite_lists.id'), nullable=True)
     campsite_list = db.relationship("CampSiteList", back_populates="campsites")
 
+    photos = db.relationship('CampsitePhoto', back_populates='campsite', 
+                           cascade='all, delete-orphan', order_by='CampsitePhoto.upload_date')
+
     submittedBy = db.Column(db.String(150), db.ForeignKey(User.name))
     name = db.Column(db.String(150))
     latitude = db.Column(db.Float)
@@ -127,3 +145,15 @@ class CampSite(db.Model):
     rating = db.Column(db.Float)
     numRatings = db.Column(db.Integer)
     ratedUsers = db.Column(db.PickleType)
+
+class CampsitePhoto(db.Model):
+    __tablename__ = 'campsite_photos'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    campsite_id = db.Column(db.Integer, db.ForeignKey('campsites.id'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    caption = db.Column(db.String(200))
+    is_primary = db.Column(db.Boolean, default=False)
+    upload_date = db.Column(db.DateTime, default=func.now())
+    
+    campsite = db.relationship('CampSite', back_populates='photos')

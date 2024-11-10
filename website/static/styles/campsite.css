@@ -455,3 +455,144 @@
 .mt-4 {
     margin-top: 1.5rem;
 }
+
+/* Photo Gallery */
+.campsite-gallery {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gallery-main {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.thumbnail {
+    position: relative;
+    aspect-ratio: 1;
+    cursor: pointer;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+.thumbnail.active {
+    border-color: #1a73e8;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnail-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25rem;
+    display: none;
+    gap: 0.25rem;
+    background: rgba(0,0,0,0.5);
+    border-radius: 0 0 0 6px;
+}
+
+.thumbnail:hover .thumbnail-controls {
+    display: flex;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.photo-upload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.photo-upload-item {
+    position: relative;
+    aspect-ratio: 1;
+}
+
+.photo-upload-item input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.preview-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #d1d5db;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+}
+
+
+.photo-controls-standalone {
+    text-align: left;
+}
+
+.photo-controls-standalone .btn {
+    font-size: 1rem;
+}

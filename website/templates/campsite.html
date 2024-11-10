@@ -130,15 +130,56 @@
 
     <div class="campsite-content">
         <div class="content-main">
-            {% if placeholder %}
-            <div class="campsite-image">
-                <img src="{{ url_for('static', filename='images/campsites/' + photo_path)}}" alt="{{ campsite.name }}" />
-            </div>
-            {% else %}
-            <div class="campsite-image">
-                <img src="{{ url_for('static', filename='images/camps_placeholder.png')}}" alt="Placeholder image" />
+            <!-- Photo Gallery -->
+            <script src="{{ url_for('static',filename='script/photo_gallery.js') }}"></script>
+            
+            {% if can_edit %}
+            <div class="photo-controls-standalone">
+                <button type="button" class="btn btn-outline" onclick="showPhotoUploadModal()">
+                    <i class="fas fa-camera"></i> Add Photos
+                </button>
             </div>
             {% endif %}
+
+            <div class="campsite-gallery">
+                {% if campsite.photos %}
+                    <div class="gallery-main">
+                        <img src="{{ url_for('static', filename='images/campsites/' + campsite.photos[0].filename) }}" 
+                            alt="{{ campsite.name|e }}" 
+                            id="gallery-main-image">
+                    </div>
+                    
+                    {% if campsite.photos|length > 1 %}
+                    <div class="gallery-thumbnails">
+                        {% for photo in campsite.photos %}
+                        <div class="thumbnail {% if loop.index0 == 0 %}active{% endif %}" 
+                            onclick="updateMainImage({{ url_for('static', filename='images/campsites/' + photo.filename)|tojson|safe }}, this)">
+                            <img src="{{ url_for('static', filename='images/campsites/' + photo.filename) }}" 
+                                alt="Thumbnail {{ loop.index }}">
+                            {% if can_edit %}
+                            <div class="thumbnail-controls">
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        onclick="deletePhoto({{ photo.id }}, event)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% if not photo.is_primary %}
+                                <button type="button" class="btn btn-primary btn-sm" 
+                                        onclick="setPrimaryPhoto({{ photo.id }}, event)">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="campsite-image">
+                        <img src="{{ url_for('static', filename='images/camps_placeholder.png') }}" alt="Placeholder image">
+                    </div>
+                {% endif %}
+            </div>
 
             <div class="campsite-description">
                 <h2>About this campsite</h2>
@@ -221,7 +262,7 @@
                 </div>
             </div>
 
-           <div class="rating-section">
+            <div class="rating-section">
                 <script src="{{ url_for('static',filename='script/rate.js') }}"></script>
                 <h3>Rate this campsite</h3>
                 
@@ -245,11 +286,8 @@
                 <div>
                     {% if user.is_authenticated %}
                     <form method='POST' action>
-                        <input type="hidden" id="rating_content" name='rating'
-                            value='0'>
-                        <input type="submit" id="submitbtn"
-                            class="btn btn-primary mt-2"
-                            value="Submit my Rating">
+                        <input type="hidden" id="rating_content" name='rating' value='0'>
+                        <input type="submit" id="submitbtn" class="btn btn-primary mt-2" value="Submit my Rating">
                     </form>
                     {% else %}
                     <p>Only registered users can rate campsites.</p>
@@ -259,6 +297,35 @@
         </div>
     </div>
 </div>
+
+{% if can_edit %}
+<!-- Photo Upload Modal -->
+<div id="photoUploadModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Upload Photos</h3>
+            <button type="button" class="close-modal" onclick="hidePhotoUploadModal()">×</button>
+        </div>
+        <form method="POST" enctype="multipart/form-data" id="photoUploadForm" 
+              action="{{ url_for('views.upload_campsite_photos', id=campsite.id) }}">
+            <div class="photo-upload-grid" id="photoUploadGrid">
+                <div class="photo-upload-item">
+                    <input type="file" name="photo_1" accept="image/*" onchange="previewImage(this)">
+                    <div class="preview-container">
+                        <img src="#" alt="Preview" style="display: none;">
+                        <div class="upload-placeholder">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Photo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="action" value="upload_photos">
+            <button type="submit" class="btn btn-primary mt-3">Upload Photos</button>
+        </form>
+    </div>
+</div>
+{% endif %}
 
 <script src="{{ url_for('static', filename='script/map_zoomed.js') }}"></script>
 <script type="text/javascript">

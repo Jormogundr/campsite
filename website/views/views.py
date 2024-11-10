@@ -18,6 +18,7 @@ from website.controllers.controllers import *
 from website.extensions import socketio
 
 from website.controllers.notifications import collaboration_notifier
+from website.controllers.images import handle_campsite_photos, delete_campsite_photo
 
 load_dotenv()
 
@@ -590,7 +591,68 @@ def set_popup_cookie():
     
     return response
 
+from flask import jsonify
 
+@views.route("/api/campsite/photo/<int:photo_id>", methods=["DELETE"])
+@login_required
+def delete_campsite_photo_route(photo_id):
+    try:
+        photo = CampsitePhoto.query.get_or_404(photo_id)
+        campsite = photo.campsite
+        
+        # Check permissions
+        if not can_edit_campsite(campsite, current_user):
+            return jsonify({"message": "You don't have permission to delete this photo"}), 403
+            
+        delete_campsite_photo(photo_id)
+        return jsonify({"message": "Photo deleted successfully"}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+@views.route("/api/campsite/photo/<int:photo_id>/primary", methods=["POST"])
+@login_required
+def set_primary_photo_route(photo_id):
+    try:
+        photo = CampsitePhoto.query.get_or_404(photo_id)
+        campsite = photo.campsite
+        
+        # Check permissions
+        if not can_edit_campsite(campsite, current_user):
+            return jsonify({"message": "You don't have permission to modify this photo"}), 403
+        
+        # Update primary photo
+        CampsitePhoto.query.filter_by(campsite_id=campsite.id).update({"is_primary": False})
+        photo.is_primary = True
+        db.session.commit()
+        
+        return jsonify({"message": "Primary photo updated successfully"}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+@views.route("/campsite/<int:id>/photos", methods=["POST"])
+@login_required
+def upload_campsite_photos(id):
+    campsite = CampSite.query.get_or_404(id)
+    
+    # Check permissions
+    if not can_edit_campsite(campsite, current_user):
+        flash("You don't have permission to add photos to this campsite", category="error")
+        return redirect(url_for('views.show_campsite', id=id))
+    
+    try:
+        if handle_campsite_photos(campsite, request.files):
+            flash("Photos uploaded successfully!", category="success")
+        else:
+            flash("No photos were uploaded", category="error")
+            
+    except Exception as e:
+        flash(str(e), category="error")
+    
+    return redirect(url_for('views.show_campsite', id=id))
 
 # Keep the helper functions in views.py
 def campsitePhotoUploadSuccessful():
@@ -641,9 +703,6 @@ def campsitePhotoUploadSuccessful():
     # save the file
     photo.save(filepath)
     return validity
-
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views.errorhandler(413)
 def error413(e):

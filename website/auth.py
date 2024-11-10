@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from flask_login import login_user, login_required, logout_user, current_user
 
 from website.models.models import UserRole
-
+from website.config import Config
 
 load_dotenv()
 
@@ -108,7 +108,7 @@ def sign_up():
             age=age,
             location=location,
             activities=activities,
-            profile_picture=profile_picture_path,
+            photo=profile_picture_path,
             role=UserRole.USER_ROLE_REGISTERED_FREE,
             password=generate_password_hash(password1, method="scrypt"),
         )
@@ -144,12 +144,12 @@ def profilePhotoUpload() -> bool:
         return validity
 
     if not allowed_file(photo.filename):
-        flash("Allowed file types are" + ALLOWED_EXTENSIONS, category="error")
+        flash("Allowed file types are" + Config.ALLOWED_EXTENSIONS, category="error")
         return validity
 
     # name file based on databaseuser id (unique)
     filename = secure_filename(str(User.query.count() + 1) + ".jpg")
-    filepath = path.join(getcwd(), PROFILE_PHOTO_UPLOAD_PATH, filename)
+    filepath = path.join(getcwd(), Config.PROFILE_PHOTO_UPLOAD_PATH, filename)
 
     validity = True
 
@@ -170,4 +170,4 @@ def profilePhotoUpload() -> bool:
 
 # helper functions
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in Config.ALLOWED_EXTENSIONS
