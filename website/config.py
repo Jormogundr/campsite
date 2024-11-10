@@ -18,7 +18,14 @@ class Config:
             DATABASE_URL += "&sslmode=require"
     
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
-    SQLALCHEMY_ENGINE_OPTIONS = {}
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,  # Enables automatic reconnection
+        "pool_recycle": 300,    # Recycle connections every 5 minutes
+        "pool_timeout": 30,     # Connection timeout after 30 seconds
+        "pool_size": 5,         # Maximum number of persistent connections
+        "max_overflow": 10      # Maximum number of connections that can be created beyond pool_size
+    }
     # SQLALCHEMY_ENGINE_OPTIONS = {
     #     "connect_args": {
     #         "sslmode": "require"
