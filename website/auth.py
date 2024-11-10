@@ -47,55 +47,82 @@ def logout():
 @auth.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
-        email = request.form.get("email")
-        name = request.form.get("name")
-        password1 = request.form.get("password1")
-        password2 = request.form.get("password2")
-        location = (
-            request.form.get("location")
-            if request.form.get("location")
-            else "None provided"
-        )
-        age = request.form.get("age") if request.form.get("age") else "None provided"
-        activities = (
-            request.form.get("activities")
-            if request.form.get("activities")
-            else "None provided"
-        )
+        # Required fields
+        email = request.form.get("email", "").strip()
+        name = request.form.get("name", "").strip()
+        password1 = request.form.get("password1", "")
+        password2 = request.form.get("password2", "")
 
+        # Optional fields - use None as default to indicate no value provided
+        location = request.form.get("location", "").strip() or None
+        age = request.form.get("age", "").strip() or None
+        activities = request.form.get("activities", "").strip() or None
+
+        # Validation for required fields
         user = User.query.filter_by(email=email).first()
         if user:
             flash("Email already exists.", category="error")
+            return render_template("sign_up.html", user=current_user)
         elif len(email) < 4:
             flash("Email must be greater than 3 characters.", category="error")
+            return render_template("sign_up.html", user=current_user)
         elif len(name) < 2:
             flash("First name must be greater than 1 character.", category="error")
+            return render_template("sign_up.html", user=current_user)
         elif password1 != password2:
             flash("Passwords don't match.", category="error")
+            return render_template("sign_up.html", user=current_user)
         elif len(password1) < 7:
             flash("Password must be at least 7 characters.", category="error")
-        elif age and not age.isnumeric():
-            flash("Age must be an integer.", category="error")
-        elif location and not any([x.isalpha() for x in location]):
-            flash("Location must contain alphabet characters.", category="error")
-        elif request.files["profile_picture"] and not profilePhotoUpload():
-            flash("There was a problem with your file.", category="error")
-        else: # valid input
-            new_user = User(
-                email=email,
-                name=name,
-                age=age,
-                location=location,
-                activities=activities,
-                role=UserRole.USER_ROLE_REGISTERED_FREE,
-                password=generate_password_hash(password1, method="scrypt"),
-            )
+            return render_template("sign_up.html", user=current_user)
+
+        # Validation for optional fields only if they're provided
+        if age is not None:
+            try:
+                age = int(age)
+                if age < 1 or age > 120:
+                    flash("Please enter a valid age between 1 and 120.", category="error")
+                    return render_template("sign_up.html", user=current_user)
+            except ValueError:
+                flash("Age must be a valid number.", category="error")
+                return render_template("sign_up.html", user=current_user)
+
+        if location is not None and not any(c.isalpha() for c in location):
+            flash("Location must contain at least one letter.", category="error")
+            return render_template("sign_up.html", user=current_user)
+
+        # Handle profile picture upload if provided
+        profile_picture_path = None
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file and file.filename:
+                if not profilePhotoUpload():  # Your existing photo upload function
+                    flash("There was a problem uploading your profile picture.", category="error")
+                    return render_template("sign_up.html", user=current_user)
+                profile_picture_path = file.filename  # Adjust based on your storage logic
+
+        # Create new user
+        new_user = User(
+            email=email,
+            name=name,
+            age=age,
+            location=location,
+            activities=activities,
+            profile_picture=profile_picture_path,
+            role=UserRole.USER_ROLE_REGISTERED_FREE,
+            password=generate_password_hash(password1, method="scrypt"),
+        )
+        
+        try:
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            flash("Account created!", category="success")
-
+            flash("Account created successfully!", category="success")
             return redirect(url_for("views.home"))
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred while creating your account. Please try again.", category="error")
+            return render_template("sign_up.html", user=current_user)
 
     return render_template("sign_up.html", user=current_user)
 

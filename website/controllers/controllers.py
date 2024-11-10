@@ -17,6 +17,22 @@ def get_all_campsites():
     campsite_names = [getattr(c, "name") for c in campsites]
     return campsite_lats, campsite_lons, campsite_ids, campsite_names
 
+def can_edit_campsite(campsite, user):
+    if not user.is_authenticated:
+        return False
+        
+    # If campsite is not in a list, only the original submitter can edit
+    if not campsite.campsite_list:
+        return user.name == campsite.submittedBy
+        
+    # Check if user is the list owner
+    if campsite.campsite_list.owner_id == user.id:
+        return True
+        
+    # Check if user has WRITE or ADMIN permission on the list
+    permission = campsite.campsite_list.get_user_permission(user)
+    return permission in [ListPermissionType.PERMISSION_WRITE, ListPermissionType.PERMISSION_ADMIN]
+
 def commit_campsite(name, latitude, longitude, hasPotable, hasElectrical, description, isBackcountry, isPermitReq, campingStyle, firePit, submittedBy, campsiteListId):
     new_campsite = CampSite(
         name=name,

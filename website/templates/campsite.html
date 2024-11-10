@@ -13,26 +13,119 @@
 
 <div class="campsite-container">
     <div class="campsite-header">
-        <h1>{{ campsite.name }}</h1>
-        <div class="campsite-meta">
-            <div class="rating-badge">
-                <span class="rating-value">{{ "%.1f"|format(campsite.rating) }}</span>
-                <div class="rating-stars">
-                    {% for i in range(5) %}
-                    <img src="{{ url_for('static',filename='images/star_' + ('filled' if i < campsite.rating else 'empty') + '.png') }}"
-                        width="20" height="20" alt="star" class="star-small">
-                    {% endfor %}
+        <!-- View Mode Content -->
+        <div id="view-mode">
+            <div class="title-section">
+                <h1>{{ campsite.name }}</h1>
+                {% if can_edit %}
+                <button onclick="toggleEditMode()" class="btn btn-outline btn-edit">
+                    <i class="fas fa-edit"></i> Edit Details
+                </button>
+                {% endif %}
+            </div>
+            <div class="campsite-meta">
+                <div class="rating-badge">
+                    <span class="rating-value">{{ "%.1f"|format(campsite.rating) }}</span>
+                    <div class="rating-stars">
+                        {% for i in range(5) %}
+                        <img src="{{ url_for('static',filename='images/star_' + ('filled' if i < campsite.rating else 'empty') + '.png') }}"
+                            width="20" height="20" alt="star" class="star-small">
+                        {% endfor %}
+                    </div>
+                    <span class="rating-count">({{ campsite.numRatings }} ratings)</span>
                 </div>
-                <span class="rating-count">({{ campsite.numRatings }} ratings)</span>
-            </div>
-            <div class="location-badge">
-                <i class="fas fa-map-marker-alt"></i>
-                {{ locale.city }}, {{ locale.country }}
-            </div>
-            <div class="submitted-by">
-                Submitted by <a href="/profile/{{submitted_by.id}}">{{submitted_by.name}}</a>
+                <div class="location-badge">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ locale.city }}, {{ locale.country }}
+                </div>
+                <div class="submitted-by">
+                    Submitted by <a href="/profile/{{submitted_by.id}}">{{submitted_by.name}}</a>
+                </div>
             </div>
         </div>
+        
+        <!-- Edit Mode Content -->
+        {% if can_edit %}
+        <div id="edit-mode" style="display: none;">
+            <form method="POST" class="edit-campsite-form">
+                <div class="edit-header">
+                    <div class="form-group">
+                        <label for="name">Campsite Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ campsite.name }}" required>
+                    </div>
+                    <div class="edit-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required>{{ campsite.description }}</textarea>
+                </div>
+                
+                <div class="edit-amenities-section">
+                    <h3>Amenities</h3>
+                    <div class="amenities-edit-grid">
+                        <div class="amenity-toggle">
+                            <input type="checkbox" class="toggle-input" id="potableWater" name="potableWater" {% if campsite.potableWater %}checked{% endif %}>
+                            <label for="potableWater">
+                                <i class="fas fa-tint"></i>
+                                Potable Water
+                            </label>
+                        </div>
+                        
+                        <div class="amenity-toggle">
+                            <input type="checkbox" class="toggle-input" id="electrical" name="electrical" {% if campsite.electrical %}checked{% endif %}>
+                            <label for="electrical">
+                                <i class="fas fa-bolt"></i>
+                                Electrical Outlets
+                            </label>
+                        </div>
+                        
+                        <div class="amenity-toggle">
+                            <input type="checkbox" class="toggle-input" id="firePit" name="firePit" {% if campsite.firePit %}checked{% endif %}>
+                            <label for="firePit">
+                                <i class="fas fa-fire"></i>
+                                Fire Pit
+                            </label>
+                        </div>
+                        
+                        <div class="amenity-toggle">
+                            <input type="checkbox" class="toggle-input" id="backCountry" name="backCountry" {% if campsite.backCountry %}checked{% endif %}>
+                            <label for="backCountry">
+                                <i class="fas fa-road"></i>
+                                Road Access
+                            </label>
+                        </div>
+                        
+                        <div class="amenity-toggle">
+                            <input type="checkbox" class="toggle-input" id="permitRequired" name="permitRequired" {% if campsite.permitRequired %}checked{% endif %}>
+                            <label for="permitRequired">
+                                <i class="fas fa-clipboard-check"></i>
+                                Permit Required
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="campingStyle">Camping Style</label>
+                    <select class="form-control" id="campingStyle" name="campingStyle">
+                        <option value="Tent" {% if campsite.campingStyle == 'Tent' %}selected{% endif %}>Tent</option>
+                        <option value="RV" {% if campsite.campingStyle == 'RV' %}selected{% endif %}>RV</option>
+                        <option value="Both" {% if campsite.campingStyle == 'Both' %}selected{% endif %}>Both</option>
+                    </select>
+                </div>
+                
+                <input type="hidden" name="edit_campsite" value="1">
+            </form>
+        </div>
+        {% endif %}
     </div>
 
     <div class="campsite-content">
@@ -171,4 +264,22 @@
 <script type="text/javascript">
     addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})
 </script>
+
+{% if can_edit %}
+<script>
+function toggleEditMode() {
+    const viewMode = document.getElementById('view-mode');
+    const editMode = document.getElementById('edit-mode');
+    
+    if (viewMode.style.display !== 'none') {
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+    } else {
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+    }
+}
+</script>
+{% endif %}
+
 {% endblock %}

@@ -25,12 +25,8 @@ class Config:
         "pool_timeout": 30,     # Connection timeout after 30 seconds
         "pool_size": 5,         # Maximum number of persistent connections
         "max_overflow": 10      # Maximum number of connections that can be created beyond pool_size
+        #"sslmode": "require"
     }
-    # SQLALCHEMY_ENGINE_OPTIONS = {
-    #     "connect_args": {
-    #         "sslmode": "require"
-    #     }
-    # }
 
     # Email SMTP
     MAIL_SERVER=os.getenv('MAIL_SERVER')
