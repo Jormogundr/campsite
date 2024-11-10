@@ -10,6 +10,7 @@ class CampSiteMapSingleton {
         
         this.map = null;
         this.initialized = false;
+        this.hasSeenTip = this.checkPopupCookie();
         
         // Create icons
         this.defaultIcon = L.icon({
@@ -78,6 +79,11 @@ class CampSiteMapSingleton {
         this.initialized = true;
     }
 
+    checkPopupCookie() {
+        return document.cookie.split(';').some(cookie => 
+            cookie.trim().startsWith('tipClosed=true'));
+    }
+
     addMarkers(lats, lons, names, ids, inSelectedList) {
         // Update marker data in proxy
         this.markerProxy.setMarkerData(lats, lons, names, ids, inSelectedList);
@@ -117,12 +123,43 @@ class CampSiteMapSingleton {
         }).addTo(this.map);
 
         // show popup with hint for user
-        L.popup()
-            .setLatLng([lat, lon])
-            .setContent(
-                '<h4 align="center"><b>Tip</b></h4> <h5 align="center">Click anywhere on the map to get the latitude and longitude</h5>'
-            )
-            .openOn(this.map);
+        if (!this.hasSeenTip) {
+            const self = this;  // Store reference to this
+            const popup = L.popup()
+                .setLatLng([lat, lon])
+                .setContent(`
+                    <div class="popup-content">
+                        <h4 align="center"><b>Tip</b></h4>
+                        <h5 align="center">Click anywhere on the map to get the latitude and longitude</h5>
+                        <div align="center">
+                            <button id="closeHintBtn" class="close-popup-btn">
+                                Don't show again
+                            </button>
+                        </div>
+                    </div>
+                `)
+                .openOn(this.map);
+
+            // Add event listener after popup is added to DOM
+            setTimeout(() => {
+                document.getElementById('closeHintBtn').addEventListener('click', () => {
+                    self.closeHintPopup();
+                });
+            }, 0);
+        }
+    }
+
+    closeHintPopup() {
+        // Send request to set cookie
+        fetch('/set-popup-cookie', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        this.hasSeenTip = true;
+        this.map.closePopup();
     }
 }
 

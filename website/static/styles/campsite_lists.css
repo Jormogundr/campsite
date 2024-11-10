@@ -150,3 +150,64 @@ h2 {
     align-items: center;
     gap: 0.8rem;
 }
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999; /* Ensure it's above other elements */
+    max-width: 350px;
+    min-width: 200px; /* Added minimum width */
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Added shadow for visibility */
+    animation: slideIn 0.3s ease-out;
+    pointer-events: auto; /* Ensure it's clickable */
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.notification-error {
+    background-color: #f44336;
+    color: white;
+    border: 1px solid #d32f2f; /* Added border */
+}
+
+.notification button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0;
+    margin-left: 8px;
+    opacity: 0.8; /* Make slightly transparent */
+}
+
+.notification button:hover {
+    opacity: 1; /* Full opacity on hover */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Add a wrapper for notifications if you have multiple */
+#notification-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}

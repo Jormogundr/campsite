@@ -1,16 +1,18 @@
 from os import path, getcwd, getenv
 from re import sub, match
+from typing import Tuple, Dict, Union
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, jsonify
 from flask_login import login_required, current_user
 from flask import jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 import traceback
 
 from .. import db
-from ..models.models import User, CampSite, CampSiteList
+from ..models.models import User, CampSite, CampSiteList, ListPermissionType
 
 from website.controllers.controllers import *
 from website.extensions import socketio
@@ -33,18 +35,18 @@ def home():
         
         # Initialize variables for user's campsite lists
         user_lists = None
-        list_campsites = set()  # Use a set for efficient lookups
+        list_campsites = set()
         selected_list_name = ""
         
         # If user is authenticated, get their campsite lists
         if current_user.is_authenticated:
-            user_lists = CampSiteList.query.filter_by(user_id=current_user.id).all()
+            user_lists = CampSiteList.query.filter_by(owner_id=current_user.id).all()
             
             # If a list is selected, get its campsites' IDs
             selected_list_id = request.args.get('list_id')
             if selected_list_id:
                 selected_list = CampSiteList.query.get(selected_list_id)
-                if selected_list and selected_list.user_id == current_user.id:
+                if selected_list and selected_list.owner_id == current_user.id:
                     list_campsites = {site.id for site in selected_list.campsites}
                     selected_list_name = selected_list.name
 
@@ -278,6 +280,47 @@ def rename_campsite_list(list_id):
     
     return jsonify({'success': True})
 
+@views.route("/campsite-lists/<int:list_id>/collaborate", methods=["POST"])
+@login_required
+def collab_campsite_list(list_id) -> Tuple[Dict[str, Union[str, bool]], int]:
+    data = request.get_json()
+    email = data.get('email', '').strip()
+    
+    # Validation chain
+    validation_result = validate_collab_request(email, list_id)
+    if validation_result:
+        # invalid if not None
+        return validation_result
+    
+    try:
+        campsite_list = CampSiteList.query.get_or_404(list_id)
+        other_user = User.query.filter_by(email=email).first()
+        
+        campsite_list.add_collaborator(other_user, ListPermissionType.PERMISSION_WRITE)
+        
+        # Verify the permission was set correctly
+        permission = campsite_list.get_user_permission(other_user)
+        can_edit = permission in (ListPermissionType.PERMISSION_WRITE, ListPermissionType.PERMISSION_ADMIN)
+        
+        if not can_edit:
+            return jsonify({
+                'error': 'Failed to set user permissions',
+                'details': 'The system could not grant write access to the user.'
+            }), 500
+            
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': f'Successfully shared list with {email}'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'error': 'Server Error',
+            'details': str(e)
+        }), 500
+
 @views.route("/campsite-lists/<int:list_id>", methods=["DELETE"])
 @login_required
 def delete_campsite_list(list_id):
@@ -353,7 +396,7 @@ def create_list():
             flash("Must select a visibility type", category="error")
             errors = True
         
-        pattern = r"^[a-zA-Z0-9]+$"
+        pattern = r"^[a-zA-Z0-9 _-]+$"
 
         if not bool(match(pattern, name)):
             flash("Name should include alphanumeric characters only", category="error")
@@ -363,7 +406,7 @@ def create_list():
 
         if not errors:
             # Construct CampSiteList entry
-            user = User.query.get(user_id)
+            owner = User.query.get(user_id)
             
             from ..models.models import ListVisibilityType
 
@@ -371,8 +414,8 @@ def create_list():
             visibility = vis_map[visibility]
 
             new_campsite_list = CampSiteList(
-                user_id = user_id,
-                user = user,
+                owner_id = user_id,
+                owner = owner,
                 visibility = visibility,
                 name = name
             )
@@ -436,6 +479,45 @@ def search_campsites():
                          user=current_user
                          )
     
+
+
+@views.route('/set-welcome-banner-cookie', methods=['POST'])
+def set_welcome_banner_cookie():
+    response = make_response(jsonify({'status': 'success'}))
+    
+    # Set cookie to expire in 30 days
+    expires = datetime.now() + timedelta(days=30)
+    
+    # Set the cookie
+    response.set_cookie(
+        'bannerClosed',
+        'true',
+        expires=expires,
+        secure=True,  # Only send cookie over HTTPS
+        httponly=False,  
+        samesite='Strict'
+    )
+    
+    return response
+
+@views.route('/set-popup-cookie', methods=['POST'])
+def set_popup_cookie():
+    response = make_response(jsonify({'status': 'success'}))
+    
+    # Set cookie to expire in 30 days
+    expires = datetime.now() + timedelta(days=30)
+    
+    # Set the cookie
+    response.set_cookie(
+        'tipClosed',
+        'true',
+        expires=expires,
+        secure=True,  # Only send cookie over HTTPS
+        httponly=False,  
+        samesite='Strict'
+    )
+    
+    return response
 
 @views.route("/filltables", methods=["GET"])
 def fillTables(FILL_TABLES=False):

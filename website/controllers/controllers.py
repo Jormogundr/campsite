@@ -1,8 +1,13 @@
-from flask import flash
+from re import match
+from typing import Tuple, Dict, Union
+
+from flask import flash, jsonify
+from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
-from ..models.models import CampSite, CampSiteList, User
+from ..models.models import *
 from .. import db
 import reverse_geocode
+
 
 def get_all_campsites():
     campsites = CampSite.query.all()
@@ -31,6 +36,64 @@ def commit_campsite(name, latitude, longitude, hasPotable, hasElectrical, descri
     )
     db.session.add(new_campsite)
     db.session.commit()
+
+def validate_collab_request(email: str, list_id: int) -> Union[Tuple[Dict[str, str], int], None]:
+    """Validate the share request parameters."""
+    
+    # Check email presence
+    if not email:
+        return jsonify({
+            'error': 'No email provided',
+            'details': 'Please provide an email address.'
+        }), 400
+    
+    # Validate email format
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    if not bool(match(pattern, email)):
+        return jsonify({
+            'error': 'Invalid Email Address format',
+            'details': 'The provided email address is not properly formatted.'
+        }), 400
+    
+    # Check if list exists
+    campsite_list = CampSiteList.query.get(list_id)
+    if not campsite_list:
+        return jsonify({
+            'error': 'List Not Found',
+            'details': 'The specified campsite list does not exist.'
+        }), 404
+    
+    # Check ownership
+    if campsite_list.owner_id != current_user.id:
+        return jsonify({
+            'error': 'Unauthorized',
+            'details': 'You do not have permission to share this list.'
+        }), 403
+    
+    # Check if target user exists
+    other_user = User.query.filter_by(email=email).first()
+    if not other_user:
+        return jsonify({
+            'error': 'Unknown Other User',
+            'details': 'No user account found with this email address.'
+        }), 404
+        
+    # Check if user is trying to share with themselves
+    if other_user.id == current_user.id:
+        return jsonify({
+            'error': 'Invalid Share Request',
+            'details': 'You cannot share a list with yourself.'
+        }), 400
+    
+    # Check if the list is already shared with this user
+    existing_permission = campsite_list.get_user_permission(other_user)
+    if existing_permission:
+        return jsonify({
+            'error': 'Already Shared',
+            'details': 'This list is already shared with this user.'
+        }), 400
+    
+    return None
 
 def get_campsite_details(user_id):
     campsite = CampSite.query.get(user_id)
@@ -73,8 +136,8 @@ def add_campsite_rating(campsite, rating, current_user):
     
     return True, "Rating submitted"
 
-def get_user_campsite_lists(user_id):
-    campsites = CampSiteList.query.filter_by(user_id=user_id).all()
+def get_user_campsite_lists(owner_id):
+    campsites = CampSiteList.query.filter_by(owner_id=owner_id).all()
     return campsites
 
 def get_campsite_list_by_id(id):
