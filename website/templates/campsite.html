@@ -11,6 +11,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"
     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 
+{% if can_edit %}
+<script src="{{ url_for('static',filename='script/campsite.js') }}"></script>
+{% endif %}
+
 <div class="campsite-container">
     <div class="campsite-header">
         <!-- View Mode Content -->
@@ -58,7 +62,10 @@
                             <i class="fas fa-times"></i> Cancel
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save Changes
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="handleDeletion(event)"  data-campsite-id="{{ campsite.id }}">
+                            <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
                 </div>
@@ -132,7 +139,7 @@
         <div class="content-main">
             <!-- Photo Gallery -->
             <script src="{{ url_for('static',filename='script/photo_gallery.js') }}"></script>
-            
+
             {% if can_edit %}
             <div class="photo-controls-standalone">
                 <button type="button" class="btn btn-outline" onclick="showPhotoUploadModal()">
@@ -331,22 +338,5 @@
 <script type="text/javascript">
     addMarker({{campsite.name|tojson}}, {{campsite.latitude|tojson}}, {{campsite.longitude|tojson}})
 </script>
-
-{% if can_edit %}
-<script>
-function toggleEditMode() {
-    const viewMode = document.getElementById('view-mode');
-    const editMode = document.getElementById('edit-mode');
-    
-    if (viewMode.style.display !== 'none') {
-        viewMode.style.display = 'none';
-        editMode.style.display = 'block';
-    } else {
-        viewMode.style.display = 'block';
-        editMode.style.display = 'none';
-    }
-}
-</script>
-{% endif %}
 
 {% endblock %}

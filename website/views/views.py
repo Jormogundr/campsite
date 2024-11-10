@@ -212,6 +212,22 @@ def show_campsite(id):
         can_edit=can_edit
     )
 
+@views.route("/campsites/<int:id>/delete", methods=['POST', 'DELETE'])
+def delete_campsite(id):
+    campsite = CampSite.query.get_or_404(id)
+    
+    # Check if user is the original submitter
+    if campsite.submittedBy != current_user.name:
+        return jsonify({'error': 'Unauthorized - only the submitter can delete this campsite'}), 403
+    
+    try:
+        db.session.delete(campsite)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 # Profile views
 @views.route("/profile/<int:id>", methods=["GET", "POST"])
 def profile(id):
@@ -346,6 +362,7 @@ def rename_campsite_list(list_id):
     db.session.commit()
     
     return jsonify({'success': True})
+    
 
 @views.route("/campsite-lists/<int:list_id>/collaborate", methods=["POST"])
 @login_required
