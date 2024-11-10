@@ -323,11 +323,10 @@ def rename_campsite_list(list_id):
 
 @views.route("/campsite-lists/<int:list_id>/collaborate", methods=["POST"])
 @login_required
-def collab_campsite_list(list_id):  # Remove return type annotation
+def collab_campsite_list(list_id):
     data = request.get_json()
     email = data.get('email', '').strip()
     
-    # Validation chain
     validation_result = validate_collab_request(email, list_id)
     if validation_result:
         # Invalid if not None
@@ -416,7 +415,6 @@ def view_campsiteList(id):
         list_name=campSiteList.name
     )
 
-# TODO: I'm thinking it'd be better to click on a little icon in the view-list view to modify the list
 @views.route("/modify-list/", methods=["GET", "POST"])
 def modify_list(): 
     return render_template(

@@ -94,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (response.ok) {
             showNotification('List shared successfully!', 'success');
-            window.location.reload();
         } else {
             // Use the error message from the server if available
             const errorMessage = data.details || data.error || 'An error occurred while sharing the list';
@@ -139,10 +138,5 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             notification.remove();
         }, 5000);
-    }
-
-    // Test function - you can call this from the browser console to test
-    function testNotification() {
-        showNotification('Test notification', 'error');
     }
 });

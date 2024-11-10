@@ -52,4 +52,4 @@ class CollaborationNotifier:
         )
 
 # Create a global instance
-collaboration_notifier = CollaborationNotifier()
+collaboration_notifier = CollaborationNotifier() # TODO: Should this go in extensions.py?
