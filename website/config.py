@@ -9,15 +9,21 @@ class Config:
     
     # Database configuration
     DATABASE_URL = os.getenv("DATABASE_URL")
-    if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    if DATABASE_URL:
+        if DATABASE_URL.startswith("postgres://"):
+            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+        if "?" not in DATABASE_URL:
+            DATABASE_URL += "?sslmode=require"
+        elif "sslmode=" not in DATABASE_URL:
+            DATABASE_URL += "&sslmode=require"
     
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "connect_args": {
-            "sslmode": "require"
-        }
-    }
+    SQLALCHEMY_ENGINE_OPTIONS = {}
+    # SQLALCHEMY_ENGINE_OPTIONS = {
+    #     "connect_args": {
+    #         "sslmode": "require"
+    #     }
+    # }
 
     # Email SMTP
     MAIL_SERVER=os.getenv('MAIL_SERVER')
