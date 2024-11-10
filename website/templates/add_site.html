@@ -1,38 +1,33 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
-
-<link rel="stylesheet" href="static/styles/add-site.css">
+{% extends "base.html" %}
+{% block title %}Add New Campsite{% endblock %}
+{% block content %}
 
 <div id="home-main-content">
+    <link rel="stylesheet" href="/static/styles/add_site.css">
     {% if user.is_authenticated %}
-    <!-- New campsite form-->
     <form class="form-container" enctype="multipart/form-data" method="POST">
-
-        <div>
-            <label for="name"><b>Campsite Name</b></label>
-            <input type="text" placeholder="Enter campsite name" name="name"
-                required>
+        <div class="form-group">
+            <label for="name">Campsite Name</label>
+            <input type="text" placeholder="Enter campsite name" name="name" required>
         </div>
 
-        <div>
-            <label for="latitude"><b>Latitude</b></label>
-            <input type="text" placeholder="Enter Latitude" name="latitude" value="{{lat}}"
-                required>
+        <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input type="text" placeholder="Enter Latitude" name="latitude" value="{{lat}}" required>
         </div>
 
-        <div>
-            <label for="longitude"><b>Longitude</b></label>
-            <input type="text" placeholder="Enter Longitude" name="longitude" value="{{lon}}"
-                required>
+        <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input type="text" placeholder="Enter Longitude" name="longitude" value="{{lon}}" required>
         </div>
 
-        <div>
-            <label for="description"><b>Description</b></label>
-            <input type="text" placeholder="Enter Description"
-                name="description">
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" placeholder="Enter Description" rows="4"></textarea>
         </div>
 
-        <div id="dropdown">
-            <label for="campingStyle" style="font-weight:bold">How did you camp?</label>
+        <div class="form-group">
+            <label for="campingStyle">How did you camp?</label>
             <select name="campingStyle" id="campingStyle">
                 <option value="Tent">Tent</option>
                 <option value="Bivy">Bivy</option>
@@ -48,60 +43,55 @@
             </select>
         </div>
 
-        <div>
-            <label for="potable" class="checkbox"><b>Has potable water
-                    access (well, fountain, etc.) </b></label>
-            <input type="checkbox" placeholder="Potable Water" name="potable">
+        <div class="checkbox-group">
+            <input type="checkbox" id="potable" name="potable">
+            <label for="potable">Has potable water access (well, fountain, etc.)</label>
         </div>
 
-        <div>
-            <label for="firePit" class="checkbox"><b>Has fire pit </b></label>
-            <input type="checkbox" placeholder="Firepit" name="firePit">
+        <div class="checkbox-group">
+            <input type="checkbox" id="firePit" name="firePit">
+            <label for="firePit">Has fire pit</label>
         </div>
 
-        <div>
-            <label for="electrical" class="checkbox"><b>Has electrical
-                    connections</b></label>
-            <input type="checkbox" placeholder="Electrical Connections"
-                name="electrical">
+        <div class="checkbox-group">
+            <input type="checkbox" id="electrical" name="electrical">
+            <label for="electrical">Has electrical connections</label>
         </div>
 
-        <div>
-            <label for="permitReq" class="checkbox"><b>Permit required</b></label>
-            <input type="checkbox" placeholder="Permit Required"
-                name="permitReq">
+        <div class="checkbox-group">
+            <input type="checkbox" id="permitReq" name="permitReq">
+            <label for="permitReq">Permit required</label>
         </div>
 
-        <div>
-            <label for="backcountry" class="checkbox"><b>Backcountry site (not
-                    road accessible)</b></label>
-            <input type="checkbox" placeholder="Backcountry"
-                name="backcountry">
+        <div class="checkbox-group">
+            <input type="checkbox" id="backcountry" name="backcountry">
+            <label for="backcountry">Backcountry site (not road accessible)</label>
         </div>
 
-        <div>
-            <label for="photos"><b>Photo</b></label>
-            <input type="file" placeholder="photo" name="photo">
+        <div class="form-group">
+            <label for="photo">Photo</label>
+            <input type="file" name="photo" id="photo" accept="image/*">
         </div>
 
-        <div>
-        <label for="campsiteList"><b>Add to list:</b></label>
+        <div class="form-group">
+            <label for="campsiteList">Add to list</label>
             <select id="campsiteList" name="campsiteList">
                 <option value="None">None</option>
                 {% for campsite in campsiteLists %}
                 <option value="{{ campsite.id }}">{{ campsite.name }}</option>
                 {% endfor %}
-            </select><br><br>
+            </select>
         </div>
 
         <div class="submit-form">
-            <button type="submit">Submit</button>
+            <button type="submit">Add Campsite</button>
         </div>
     </form>
+    {% else %}
+    <div class="auth-message">
+        <h1>You must <a href="/sign-up">sign in</a> to add a campsite.</h1>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-
-<h1 align="center">You must <a href="/sign-up">sign in to add a campsite.</a></h1>
-{% endif %}
 
 {% endblock %}

@@ -417,7 +417,7 @@ def delete_campsite_list(list_id):
     campsite_list = CampSiteList.query.get_or_404(list_id)
     
     # Check if user owns this list
-    if campsite_list.user_id != current_user.id:
+    if campsite_list.owner_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
     
     for campsite in campsite_list.campsites:
@@ -491,7 +491,15 @@ def create_list():
             flash("Name should include alphanumeric characters only", category="error")
             errors = True
         
-        # TODO: Check for duplicate entry
+        # Check for duplicate entry
+        campsite_list_exists = db.session.query(CampSiteList).filter(
+            CampSiteList.owner_id == user_id,
+            CampSiteList.name == name
+        ).first() is not None
+
+        if campsite_list_exists is not None:
+            flash("A campsite list with this name already exists", category="error")
+            errors = True
 
         if not errors:
             # Construct CampSiteList entry

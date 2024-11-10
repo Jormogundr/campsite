@@ -56,7 +56,6 @@ function drawMap(lat, lon) {
 // on successful document load, draw map
 
 document.addEventListener("DOMContentLoaded", () => {
-  // TODO: handle cases where user blocks location in browser
   // first arg for getCurrentPosition is successful callback, second is error callback
   navigator.geolocation.getCurrentPosition(
     (position) => {
