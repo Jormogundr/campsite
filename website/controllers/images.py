@@ -1,12 +1,14 @@
-import os
+from os import path, getcwd, path, remove
 from re import sub
 from PIL import Image
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from flask import request, flash
 
 from website.models.models import db, CampsitePhoto
-
 from website.config import Config
+
+
 
 class PhotoManager:
     def __init__(self, campsite_upload_path, user_upload_path, allowed_extensions={'png', 'jpg', 'jpeg', 'gif'}):
@@ -30,7 +32,7 @@ class PhotoManager:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         base_name = secure_filename(f"{sub('[^A-Za-z0-9]+', '', filename)}_{timestamp}")
         filename = f"{base_name}.jpg"
-        filepath = os.path.join(self.campsite_upload_path, filename)
+        filepath = path.join(self.campsite_upload_path, filename)
         
         # Convert to JPG and save
         image = Image.open(file)
@@ -46,9 +48,9 @@ class PhotoManager:
     
     def delete_photo(self, filename):
         """Delete a photo file"""
-        filepath = os.path.join(self.campsite_upload_path, filename)
-        if os.path.exists(filepath):
-            os.remove(filepath)
+        filepath = path.join(self.campsite_upload_path, filename)
+        if path.exists(filepath):
+            remove(filepath)
 
 photo_manager = PhotoManager(Config.CAMPSITE_PHOTO_UPLOAD_PATH, Config.PROFILE_PHOTO_UPLOAD_PATH)
 
@@ -116,4 +118,51 @@ def handle_profile_photos(user, file, existing_photos=None):
 
     return
     
-    
+def campsitePhotoUploadSuccessful():
+    # Retrieve file from request
+    photo = request.files["photo"]
+
+    # Check user upload
+    validity = False
+    if not photo:
+        return validity
+
+    if photo.filename == "":
+        flash("No file selected.", category="error")
+        return validity
+
+    if not photo_manager.allowed_file(photo.filename):
+        flash("Allowed file types are" + photo_manager.allowed_extensions, category="error")
+        return validity
+
+    # Name file after the submitted campsite name
+    file = request.form.get("name")
+
+    # Strip special chars from file
+    file = sub("[^A-Za-z0-9]+", "", file) + ".jpg"
+
+    filename = secure_filename(file)
+    filepath = path.join(getcwd(), photo_manager.campsite_upload_path, filename)
+
+    # Check if file already exists on server
+    if path.isfile(filepath):
+        flash(
+            "Your uploaded file already exists on the server (is your campsite entry a duplicate?)",
+            category="error",
+        )
+        return validity
+
+    validity = True
+
+    # Handle png uploads: convert to jpg then save
+    if photo.filename.split(".")[-1] != ".jpg":
+        from PIL import Image
+
+        im = Image.open(photo)
+        rgb_im = im.convert("RGB")
+        rgb_im.save(filepath)
+        return validity
+
+    # Save the file
+    photo.save(filepath)
+    return validity

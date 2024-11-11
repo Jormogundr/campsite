@@ -314,7 +314,7 @@
             <button type="button" class="close-modal" onclick="hidePhotoUploadModal()">×</button>
         </div>
         <form method="POST" enctype="multipart/form-data" id="photoUploadForm" 
-              action="{{ url_for('views.upload_campsite_photos', id=campsite.id) }}">
+              action="{{ url_for('view_campsite.upload_campsite_photos', id=campsite.id) }}">
             <div class="photo-upload-grid" id="photoUploadGrid">
                 <div class="photo-upload-item">
                     <input type="file" name="photo_1" accept="image/*" onchange="previewImage(this)">

@@ -3,7 +3,7 @@ const deletePhoto = async (photoId, event) => {
     if (!confirm('Are you sure you want to delete this photo?')) return;
     
     try {
-        const response = await fetch(`/api/campsite/photo/${photoId}`, {
+        const response = await fetch(`photo/${photoId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ const setPrimaryPhoto = async (photoId, event) => {
     event.stopPropagation();
     
     try {
-        const response = await fetch(`/api/campsite/photo/${photoId}/primary`, {
+        const response = await fetch(`photo/${photoId}/primary`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -27,10 +27,21 @@ def create_app(config_class=Config):
         return User.query.get(int(id))
     
     # Register blueprints
-    from .views.views import views
-    from .auth import auth
+    from .views.home import home_bp
+    from .views.add_campsite import add_campsite_bp
+    from .views.view_campsite import view_campsite_bp
+    from .views.profile import profile_bp
+    from .views.campsite_list import campsite_lists_bp
+    from .views.search import search_bp
     
-    app.register_blueprint(views, url_prefix="/")
+    app.register_blueprint(home_bp, url_prefix="/")
+    app.register_blueprint(add_campsite_bp, url_prefix="/add-campsite/")
+    app.register_blueprint(view_campsite_bp, url_prefix="/campsites/")
+    app.register_blueprint(profile_bp, url_prefix="/profile/")
+    app.register_blueprint(campsite_lists_bp, url_prefix="/campsite-lists/")
+    app.register_blueprint(search_bp, url_prefix="/search/")
+
+    from .auth import auth
     app.register_blueprint(auth, url_prefix="/")
     
     # Create database tables
