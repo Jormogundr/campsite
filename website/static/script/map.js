@@ -35,11 +35,16 @@ class CampSiteMapSingleton {
     initialize(callback = null) {
         if (this.initialized) return;
         
-        this.map = L.map("map").setView([this.DEFAULT_LAT, this.DEFAULT_LON], 8);
+        this.map = L.map("map", {
+            maxBounds: [[-90, -180], [90, 180]],
+            maxBoundsViscosity: 1.0
+        }).setView([this.DEFAULT_LAT, this.DEFAULT_LON], 8);
         
         // Add OpenStreetMap tile layer
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            noWrap: true,
+            bounds: [[-90, -180], [90, 180]]
         }).addTo(this.map);
         
         // Set up click handler for adding new campsites
@@ -120,6 +125,8 @@ class CampSiteMapSingleton {
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution:
                 '&copy; <a href="https://www.openstreetmap.org/copyright" style="text-align: center">OpenStreetMap</a> contributors',
+            noWrap: true,
+            bounds: [[-90, -180], [90, 180]]
         }).addTo(this.map);
 
         // show popup with hint for user

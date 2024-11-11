@@ -1,3 +1,64 @@
 input[type="file"] {
   color: transparent;
 }
+
+.custom-file-upload {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      background: #f8f9fa;
+      margin-bottom: 1rem;
+    }
+
+    .file-input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .file-input-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn-choose-file {
+      padding: 0.5rem 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-choose-file:hover {
+      background: #0056b3;
+    }
+
+    .file-name-display {
+      padding: 0.5rem;
+      background: #e9ecef;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #495057;
+      min-height: 2.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .clear-file {
+      color: #dc3545;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .clear-file.visible {
+      display: inline;
+    }

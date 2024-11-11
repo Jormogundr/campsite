@@ -85,15 +85,27 @@
       placeholder="List some of your favorite activities" />
   </div>
 
-  <div class="form-group">
+  <div class="form-group custom-file-upload">
+  <script src="{{ url_for('static', filename='script/signup.js') }}"></script>
     <label for="profile_picture">Profile Picture (Optional)</label>
-    <input 
-      type="file" 
-      class="form-control"
-      id="profile_picture"
-      name="profile_picture"
-      accept="image/*" />
-    <small class="text-muted">Supported formats: JPG, PNG, GIF</small>
+    <div class="file-input-wrapper">
+      <div class="file-input-controls">
+        <button type="button" class="btn-choose-file" onclick="document.getElementById('profile_picture').click()">
+          Choose File
+        </button>
+        <span class="file-name-display">No file chosen</span>
+        <span class="clear-file" onclick="clearFileInput()">&times; Clear</span>
+      </div>
+      <input 
+        type="file" 
+        class="hidden"
+        id="profile_picture"
+        name="profile_picture"
+        accept="image/*" 
+        onchange="updateFileName(this)"
+      />
+      <small class="text-muted">Supported formats: JPG, PNG, GIF</small>
+    </div>
   </div>
 
   <button type="submit" class="btn btn-primary mt-4">Create Account</button>

@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_login import login_user, login_required, logout_user, current_user
 
-from website.models.models import UserRole
+from website.models.models import UserRole, UserPhoto
 from website.config import Config
 
 load_dotenv()
@@ -91,37 +91,41 @@ def sign_up():
             flash("Location must contain at least one letter.", category="error")
             return render_template("sign_up.html", user=current_user)
 
-        # Handle profile picture upload if provided
-        profile_picture_path = None
-        if 'profile_picture' in request.files:
-            file = request.files['profile_picture']
-            if file and file.filename:
-                if not profilePhotoUpload():  # Your existing photo upload function
-                    flash("There was a problem uploading your profile picture.", category="error")
-                    return render_template("sign_up.html", user=current_user)
-                profile_picture_path = file.filename  # Adjust based on your storage logic
-
-        # Create new user
-        new_user = User(
-            email=email,
-            name=name,
-            age=age,
-            location=location,
-            activities=activities,
-            photo=profile_picture_path,
-            role=UserRole.USER_ROLE_REGISTERED_FREE,
-            password=generate_password_hash(password1, method="scrypt"),
-        )
-        
         try:
+            # Create new user first without the photo
+            new_user = User(
+                email=email,
+                name=name,
+                age=age,
+                location=location,
+                activities=activities,
+                role=UserRole.USER_ROLE_REGISTERED_FREE,
+                password=generate_password_hash(password1, method="scrypt"),
+            )
+            
+            # Handle profile picture upload if provided
+            if 'profile_picture' in request.files:
+                file = request.files['profile_picture']
+                if file and file.filename:
+                    if profilePhotoUpload():
+                        user_photo = UserPhoto(
+                            filename=file.filename,
+                            user=new_user  
+                        )
+                    else:
+                        flash("There was a problem uploading your profile picture.", category="error")
+                        return render_template("sign_up.html", user=current_user)
+
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
             flash("Account created successfully!", category="success")
-            return redirect(url_for("views.home"))
+            return redirect(url_for("home.homepage"))
+            
         except Exception as e:
             db.session.rollback()
             flash("An error occurred while creating your account. Please try again.", category="error")
+            print(f"Error during user creation: {str(e)}")  
             return render_template("sign_up.html", user=current_user)
 
     return render_template("sign_up.html", user=current_user)
