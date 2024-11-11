@@ -46,6 +46,11 @@ def create_app(config_class=Config):
     app.register_blueprint(campsite_lists_bp, url_prefix="/campsite-lists/")
     app.register_blueprint(search_bp, url_prefix="/search/")
 
+    # Register authentication
+
+    from .auth import auth
+    app.register_blueprint(auth, url_prefix="/")
+
     # Error handling
     register_error_handling(app)
 
@@ -54,9 +59,6 @@ def create_app(config_class=Config):
     if FILL_TABLES:
         from .test.filltables import fill_table_bp
         app.register_blueprint(fill_table_bp, url_prefix="/filltables")
-
-    from .auth import auth
-    app.register_blueprint(auth, url_prefix="/")
     
     # Create database tables
     with app.app_context():
