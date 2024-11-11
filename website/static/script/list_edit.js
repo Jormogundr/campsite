@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('shareModal').style.display = 'none';
     }
 
+    window.openVisModal = function() {
+        document.getElementById('visModal').style.display = 'block';
+    }
+
+    window.closeVisModal = function() {
+        document.getElementById('visModal').style.display = 'none';
+    }
+
     // Close modals when clicking outside
     window.onclick = function(event) {
         if (event.target.className === 'modal') {
@@ -77,33 +85,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Collab function
     window.collabList = async function() {
-    const emailInput = document.getElementById('collabList');
-    const newEmail = emailInput.value;
-    
-    try {
-        const response = await fetch(`/campsite-lists/${listId}/collaborate`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email: newEmail })
-        });
+        const emailInput = document.getElementById('collabList');
+        const newEmail = emailInput.value;
         
-        // Always parse the response data, regardless of status
-        const data = await response.json();
-        
-        if (response.ok) {
-            showNotification('List shared successfully!', 'success');
-        } else {
-            // Use the error message from the server if available
-            const errorMessage = data.details || data.error || 'An error occurred while sharing the list';
-            showNotification(errorMessage, 'error');
+        try {
+            const response = await fetch(`/campsite-lists/${listId}/collaborate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: newEmail })
+            });
+            
+            // Always parse the response data, regardless of status
+            const data = await response.json();
+            
+            if (response.ok) {
+                showNotification('List shared successfully!', 'success');
+            } else {
+                // Use the error message from the server if available
+                const errorMessage = data.details || data.error || 'An error occurred while sharing the list';
+                showNotification(errorMessage, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An unexpected error occurred while sharing the list', 'error');
         }
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('An unexpected error occurred while sharing the list', 'error');
     }
-}
+
+    // Update Visibility function
+    window.visList = async function() {
+        const visInput = document.getElementById('visList');
+        const vis = visInput.value;
+        
+        try {
+            const response = await fetch(`/campsite-lists/${listId}/update-vis`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ visibility: vis })
+            });
+            
+            // Always parse the response data, regardless of status
+            const data = await response.json();
+            
+            if (response.ok) {
+                showNotification('List updated successfully!', 'success');
+            } else {
+                // Use the error message from the server if available
+                const errorMessage = data.details || data.error || 'An error occurred while updating the list';
+                showNotification(errorMessage, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An unexpected error occurred while updating the list', 'error');
+        }
+    }
 
     // Helper function to show notifications
     function showNotification(message, type) {

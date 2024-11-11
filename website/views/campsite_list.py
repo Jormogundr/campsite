@@ -99,8 +99,37 @@ def delete_campsite_list(list_id):
     
     return jsonify({'success': True})
 
-@campsite_lists_bp.route("<int:id>")
-def view_campsiteList(id):
+@campsite_lists_bp.route("<int:list_id>/update-vis", methods=["POST"])
+@login_required
+def update_visibility_campsite_list(list_id):
+    campsite_list = CampSiteList.query.get_or_404(list_id)
+    
+    # Check if user owns this list
+    if campsite_list.owner_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    data = request.get_json()
+    visibility = data.get('visibility', '').strip()
+
+    # Ensure the visibility is not being updated to the existing type
+    if visibility == campsite_list.visibility:
+        return jsonify({'error': 'Redundant operation'}), 400
+
+    is_valid = any(visibility == item.display_name for item in ListVisibilityType)
+    if visibility is None or not is_valid:
+        return jsonify({'error': 'Invalid data'}), 400
+    
+    # Update the visibility using string -> ListVisibilityType mapping
+    str_to_type_map = {item.display_name:item for item in ListVisibilityType}
+    listVisType = str_to_type_map[visibility]
+
+    campsite_list.visibility = listVisType
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
+@campsite_lists_bp.route("<int:id>", methods=["GET"])
+def view_campsite_list(id):
     """
     
     Return an HTML page with the information necessary to display a specific campsite list details.
@@ -117,6 +146,9 @@ def view_campsiteList(id):
         return render_template("error.html", msg="The campsite list does not exist."), 404
     
     campsites = campSiteList.campsites
+
+    # Get visibility types for displaying
+    visibilities = [visibility.display_name for visibility in ListVisibilityType]
     
     return render_template(
         "campsite_list.html",
@@ -124,6 +156,7 @@ def view_campsiteList(id):
         campsitelist=campSiteList,
         campsites = campsites,
         list_id=id,
+        visibilities=visibilities,
         list_name=campSiteList.name
     )
 

@@ -1,7 +1,9 @@
 from enum import Enum
-from .. import db
+
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+
+from .. import db
 
 class ListVisibilityType(Enum):
     LIST_VISIBILITY_NONE = 0
@@ -9,12 +11,31 @@ class ListVisibilityType(Enum):
     LIST_VISIBILITY_PROTECTED = 2
     LIST_VISIBILITY_PUBLIC = 3
 
+    @property
+    def display_name(self):
+        return {
+            ListVisibilityType.LIST_VISIBILITY_NONE: "None",
+            ListVisibilityType.LIST_VISIBILITY_PRIVATE: "Private",
+            ListVisibilityType.LIST_VISIBILITY_PROTECTED: "Protected",
+            ListVisibilityType.LIST_VISIBILITY_PUBLIC: "Public"
+        }[self]
+
 class UserRole(Enum):
     USER_ROLE_GUEST = 0
     USER_ROLE_REGISTERED_FREE = 1
     USER_ROLE_REGISTERED_FREE_PREMIUM = 2
     USER_ROLE_MODERATOR = 3
     USER_ROLE_ADMIN = 4
+
+    @property
+    def display_name(self):
+        return {
+            UserRole.USER_ROLE_GUEST: "None",
+            UserRole.USER_ROLE_REGISTERED_FREE: "Free",
+            UserRole.USER_ROLE_REGISTERED_FREE_PREMIUM: "Premimum",
+            UserRole.USER_ROLE_MODERATOR: "Moderator",
+            UserRole.USER_ROLE_ADMIN: "Admin"
+        }[self]
 
 class ListPermissionType(Enum):
     PERMISSION_READ = 1
