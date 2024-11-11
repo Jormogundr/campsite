@@ -70,11 +70,6 @@ def show_profile(id):
 
 @profile_bp.route("view-lists", methods=["GET"])
 def view_user_campsitLists(): 
-    """Returns an HTML page of all campsite lists associated with the logged in user's profile.
-
-    Returns:
-        str: HTML page with relevant information
-    """
     user_id = current_user.id
     campsiteLists = get_user_campsite_lists(user_id)
 
@@ -89,18 +84,20 @@ def view_user_campsitLists():
             .all()
             
         lists_collaborators[campsite_list.id] = shared_users
+
+    campsite_counts = [len(x.campsites) if x.campsites is not None else 0 for x in campsiteLists]
     
     return render_template(
         "view_lists.html",
         user=current_user,
         campsiteLists=campsiteLists,
+        campsite_counts=campsite_counts,
         lists_collaborators=lists_collaborators
     )
 
 @profile_bp.route("create-list", methods=["GET", "POST"])
 def create_list(): 
-    
-    # TODO: Move this logic to controllers 
+    # TODO: Move some of this logic to controllers 
     user_id = current_user.id
     campsites = get_user_campsite_lists(user_id)
 
@@ -150,7 +147,6 @@ def create_list():
                 name = name
             )
 
-            # TODO: Can this fail?
             db.session.add(new_campsite_list)
             db.session.commit()
             

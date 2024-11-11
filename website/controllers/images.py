@@ -7,9 +7,6 @@ from flask import request, flash
 
 from website.models.models import db, CampsitePhoto
 from website.config import Config
-
-
-
 class PhotoManager:
     def __init__(self, campsite_upload_path, user_upload_path, allowed_extensions={'png', 'jpg', 'jpeg', 'gif'}):
         self.campsite_upload_path = campsite_upload_path
