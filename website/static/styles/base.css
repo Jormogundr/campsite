@@ -1,26 +1,161 @@
-#page_title {
-  font-size: 2em;
-  margin-top: 2em;
-}
-
-#container {
-  width: 95vw;
-  height: 85vh;
+:root {
+    --color-primary: #2c5282;
+    --color-secondary: #8b4513;
+    --color-accent: #2f855a;
+    --color-background: #ffffff;
+    --color-text: #2d3748;
+    --color-text-light: #718096;
+    --color-border: #e2e8f0;
 }
 
 body {
-  width: 95vw;
-  background-color: white;
-  margin: 15px auto;
-  height: auto;
-  max-height: 95vh;
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
 }
 
+/* Navbar Styles */
+.navbar {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 2rem;
+}
+
+.navbar-brand-container {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand {
+    font-family: 'Fjalla One', sans-serif;
+    color: var(--color-primary) !important;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-logo {
+    height: 30px;
+    width: auto;
+}
+
+.navbar-nav .nav-link {
+    color: var(--color-text) !important;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--color-primary) !important;
+    background-color: rgba(44, 82, 130, 0.1);
+    border-radius: 4px;
+}
+
+.navbar-toggler {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Flash Messages */
+.flash-messages {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.alert {
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #f7fafc;
+    padding: 1rem;
+    margin-top: auto;
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+}
+
+.footer-content {
+    color: var(--color-text-light);
+    font-size: 0.875rem;
+}
+
+/* Error Pages */
 #error {
-  text-align: center;
-  margin-top: 3em;
+    text-align: center;
+    padding: 3rem 1rem;
 }
 
 #error h1 {
-  color: red;
+    color: #e53e3e;
+    font-family: 'Fjalla One', sans-serif;
+    margin-bottom: 1rem;
+}
+
+#error h3 {
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 0.5rem;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .flash-messages {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
+/* Utility Classes */
+.text-primary {
+    color: var(--color-primary) !important;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.icon-spacing {
+    margin-right: 0.5rem;
 }
