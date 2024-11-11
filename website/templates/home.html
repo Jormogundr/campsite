@@ -4,15 +4,27 @@
 
 <link rel="stylesheet" href="static/styles/home.css">
 
-<div id="welcome-banner">
-    <span id="close" onclick="this.parentNode.remove(); return false;">x</span>
-    <h1 id="welcome">Welcome to CampSite</h1>
-    <p id="welcome-message">For the outdoors enthusiast -- never again lose
-        track of your favorite publically accessible outdoor recreation
-        campsites! Built for the backpackers, hunters, fishermen,
-        off-roaders,
-        bikepackers, trail runners, and more.</p>
+<div class="welcome-banner">
+    <button class="welcome-close">×</button>
+    <div class="welcome-banner-content">
+        <h1 class="welcome-title">Welcome to CampSite</h1>
+        <p class="welcome-message">
+            For the outdoors enthusiast -- never again lose track of your favorite publicly accessible outdoor recreation
+            campsites! Built for the adventurous spirit in all of us.
+        </p>
+        <div class="welcome-tags">
+            <span class="welcome-tag">🏃‍♂️ Backpackers</span>
+            <span class="welcome-tag">🎯 Hunters</span>
+            <span class="welcome-tag">🎣 Fishermen</span>
+            <span class="welcome-tag">🚙 Off-roaders</span>
+            <span class="welcome-tag">🚴‍♂️ Bikepackers</span>
+            <span class="welcome-tag">👟 Trail Runners</span>
+        </div>
+        <button class="do-not-show-again">Do not show again</button>
+    </div>
 </div>
+
+<script src="{{ url_for('static', filename='script/welcome.js') }}"></script>
 
 <!-- Map dependencies -->
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/map.css') }}" />
