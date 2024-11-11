@@ -10,6 +10,7 @@ from ..models.models import CampSite
 
 from website.controllers.controllers import *
 from website.controllers.images import handle_campsite_photos, delete_campsite_photo
+from website.controllers.campsite import get_campsite_details, can_edit_campsite, add_campsite_rating
 
 view_campsite_bp = Blueprint("view_campsite", __name__, url_prefix="campsites/")
 

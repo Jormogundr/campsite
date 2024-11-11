@@ -6,7 +6,7 @@ The purpose of this project is to showcase some web development and design patte
 - Model-View-Controller: a very popular pattern for web applications, used here as well. It's useful because it makes the project code better organized and easier to understand. Each part of MVC has its own file in the `website/` directory. The authentication logic has its own file `auth.py`: a common practice in an MVC implementation, since this logic does not typically fit neatly within any particular component of MVC. 
 - Observer: In `website/controllers/notifications.py`, an observer has been added to handle emailing users when they are added as collaborators to a CampSite list. Future work is planned to allow these users the ability to add and remove CampSites to and from a CampSite list. 
 - Proxy: In `website/static/script/marker_loader.js`, a Proxy pattern has been implemented that caches markers and lazily loads markers on the singleton leaflet. The initial concern was that the map could become very slow to load as more and more users add CampSites to the map. This at least partly addresses the problem for now. 
-- Singleton: Also in `website/static/script/CampSite_map.js` is the `CampSiteMapSingleton` class, which represents the single global map object for the website. A single map instance was desired to make the map experience consistent for all users.
+- Singleton: Also in `website/static/script/map.js` is the `CampSiteMapSingleton` class, which represents the single global map object for the website. A single map instance was desired to make the map experience consistent for all users.
 
 
 # Heroku
