@@ -16,7 +16,7 @@ from website.controllers.campsite import get_user_campsite_lists
 profile_bp = Blueprint("profile", __name__, url_prefix="/profile/")
 
 @profile_bp.route("<int:id>", methods=["GET", "POST"])
-def profile(id):
+def show_profile(id):
     user = User.query.get(id)
     if not user:
         return render_template("error.html", user=current_user, msg="No such user found.")

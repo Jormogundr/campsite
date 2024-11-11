@@ -1,125 +1,176 @@
-{% extends "base.html" %} {% block title %}Search{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}Search{% endblock %} 
+{% block content %}
 <body>
     <link rel="stylesheet" href="/static/styles/search.css">
     <div class="search-container">
-    <form method="POST" class="search-form">
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" name="name" value="{{ request.form.get('name', '') }}" 
-                   placeholder="Search campsites...">
-        </div>
-
-        <div class="form-group">
-            <label>Style</label>
-            <select name="campingStyle">
-                <option value="">Any</option>
-                {% for style in camping_styles %}
-                <option value="{{ style }}" 
-                        {% if request.form.get('campingStyle') == style %}selected{% endif %}>
-                    {{ style }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Min Rating</label>
-            <select name="minRating">
-                <option value="">Any</option>
-                {% for rating in range(1, 6) %}
-                <option value="{{ rating }}"
-                        {% if request.form.get('minRating')|float == rating %}selected{% endif %}>
-                    {{ rating }}+ ★
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Amenities</label>
-            <div class="checkbox-group">
-                <label class="checkbox-item">
-                    <input type="checkbox" name="potableWater" value="true"
-                           {% if request.form.get('potableWater') %}checked{% endif %}>
-                    Water
-                </label>
-                <label class="checkbox-item">
-                    <input type="checkbox" name="electrical" value="true"
-                           {% if request.form.get('electrical') %}checked{% endif %}>
-                    Electric
-                </label>
-                <label class="checkbox-item">
-                    <input type="checkbox" name="firePit" value="true"
-                           {% if request.form.get('firePit') %}checked{% endif %}>
-                    Fire Pit
-                </label>
+        <form method="POST" class="search-form">
+            <div class="form-group">
+                <label>Search Type</label>
+                <select name="searchType" id="searchTypeSelect" onchange="this.form.submit()">
+                    <option value="campsite" {% if request.form.get('searchType') != 'user' %}selected{% endif %}>
+                        Campsites
+                    </option>
+                    <option value="user" {% if request.form.get('searchType') == 'user' %}selected{% endif %}>
+                        Users
+                    </option>
+                </select>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label>Type</label>
-            <div class="checkbox-group">
-                <label class="checkbox-item">
-                    <input type="checkbox" name="backCountry" value="true"
-                           {% if request.form.get('backCountry') %}checked{% endif %}>
-                    Back Country
-                </label>
-                <label class="checkbox-item">
-                    <input type="checkbox" name="permitRequired" value="true"
-                           {% if request.form.get('permitRequired') %}checked{% endif %}>
-                    Permit
-                </label>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" value="{{ request.form.get('name', '') }}" 
+                       placeholder="Search...">
             </div>
-        </div>
 
-        <button type="submit" class="search-button">Search</button>
-    </form>
-</div>
+            {% if request.form.get('searchType') != 'user' %}
+            <!-- Campsite-specific filters -->
+            <div class="form-group">
+                <label>Style</label>
+                <select name="campingStyle">
+                    <option value="">Any</option>
+                    {% for style in camping_styles %}
+                    <option value="{{ style }}" 
+                            {% if request.form.get('campingStyle') == style %}selected{% endif %}>
+                        {{ style }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-{% if results %}
-<table class="results-table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Style</th>
-            <th>Rating</th>
-            <th>Amenities</th>
-            <th>Type</th>
-            <th>Submitted By</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for campsite in results %}
-        <tr>
-            <td>
-                <a href="{{ url_for('views.show_campsite', id=campsite.id) }}" class="campsite-link"> {{campsite.name}}</a>
-            </td>
-            <td>{{ campsite.campingStyle }}</td>
-            <td class="rating">
-                <span class="rating-number">{{ "%.1f"|format(campsite.rating) }}</span>
-                <span class="rating-count">({{ campsite.numRatings }})</span>
-            </td>
-            <td>
-                {% if campsite.potableWater %}<span class="checkmark">✓</span> Water{% endif %}
-                {% if campsite.electrical %}<span class="checkmark">✓</span> Electric{% endif %}
-                {% if campsite.firePit %}<span class="checkmark">✓</span> Fire{% endif %}
-            </td>
-            <td>
-                {% if campsite.backCountry %}Back Country{% endif %}
-                {% if campsite.permitRequired %}
-                    {% if campsite.backCountry %}, {% endif %}
-                    Permit Required
+            <div class="form-group">
+                <label>Min Rating</label>
+                <select name="minRating">
+                    <option value="">Any</option>
+                    {% for rating in range(1, 6) %}
+                    <option value="{{ rating }}"
+                            {% if request.form.get('minRating')|float == rating %}selected{% endif %}>
+                        {{ rating }}+ ★
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Amenities</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="potableWater" value="true"
+                               {% if request.form.get('potableWater') %}checked{% endif %}>
+                        Water
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="electrical" value="true"
+                               {% if request.form.get('electrical') %}checked{% endif %}>
+                        Electric
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="firePit" value="true"
+                               {% if request.form.get('firePit') %}checked{% endif %}>
+                        Fire Pit
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="backCountry" value="true"
+                               {% if request.form.get('backCountry') %}checked{% endif %}>
+                        Back Country
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="permitRequired" value="true"
+                               {% if request.form.get('permitRequired') %}checked{% endif %}>
+                        Permit
+                    </label>
+                </div>
+            </div>
+            {% else %}
+            <!-- User-specific filters -->
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" value="{{ request.form.get('location', '') }}" 
+                       placeholder="Filter by location...">
+            </div>
+
+            <div class="form-group">
+                <label>Activities</label>
+                <input type="text" name="activities" value="{{ request.form.get('activities', '') }}" 
+                       placeholder="Filter by activities...">
+            </div>
+            {% endif %}
+
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+
+    {% if results %}
+    <table class="results-table">
+        <thead>
+            <tr>
+                {% if request.form.get('searchType') == 'user' %}
+                <th>Name</th>
+                <th>Location</th>
+                <th>Activities</th>
+                <th>Lists</th>
+                {% else %}
+                <th>Name</th>
+                <th>Style</th>
+                <th>Rating</th>
+                <th>Amenities</th>
+                <th>Type</th>
+                <th>Submitted By</th>
                 {% endif %}
-            </td>
-            <td>{{ campsite.submittedBy }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% elif request.method == 'POST' %}
-<p style="text-align: center; color: #666; padding: 20px;">
-    No results found matching your criteria.
-</p>
-{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                {% if request.form.get('searchType') == 'user' %}
+                <td>
+                    <a href="{{ url_for('profile.show_profile', id=result.id) }}" class="user-link">
+                        {{ result.name }}
+                    </a>
+                </td>
+                <td>{{ result.location or 'Not specified' }}</td>
+                <td>{{ result.activities or 'Not specified' }}</td>
+                <td>{{ result.owned_campsite_lists|length }} owned, 
+                    {{ result.shared_campsite_lists.count() }} shared</td>
+                {% else %}
+                <td>
+                    <a href="{{ url_for('view_campsite.show_campsite', id=result.id) }}" class="campsite-link">
+                        {{result.name}}
+                    </a>
+                </td>
+                <td>{{ result.campingStyle }}</td>
+                <td class="rating">
+                    <span class="rating-number">{{ "%.1f"|format(result.rating) }}</span>
+                    <span class="rating-count">({{ result.numRatings }})</span>
+                </td>
+                <td>
+                    {% if result.potableWater %}<span class="checkmark">✓</span> Water{% endif %}
+                    {% if result.electrical %}<span class="checkmark">✓</span> Electric{% endif %}
+                    {% if result.firePit %}<span class="checkmark">✓</span> Fire{% endif %}
+                </td>
+                <td>
+                    {% if result.backCountry %}Back Country{% endif %}
+                    {% if result.permitRequired %}
+                        {% if result.backCountry %}, {% endif %}
+                        Permit Required
+                    {% endif %}
+                </td>
+                <td>{{ result.submittedBy }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% elif request.method == 'POST' %}
+    <p style="text-align: center; color: #666; padding: 20px;">
+        No results found matching your criteria.
+    </p>
+    {% endif %}
 </body>
 {% endblock %}
