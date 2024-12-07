@@ -38,7 +38,7 @@ def validate_collab_request(email: str, list_id: int) -> Union[Tuple[Dict[str, s
         print(f"Validation failed - {result}")
         return result
     
-    if campsite_list.visibility != ListVisibilityType.LIST_VISIBILITY_PUBLIC.value:
+    if campsite_list.visibility.value != ListVisibilityType.LIST_VISIBILITY_PUBLIC.value:
         result = jsonify({
             'error': 'Invalid visibility',
             'details': 'You may not collaborate on non-public lists.'

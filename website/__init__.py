@@ -8,14 +8,15 @@ from .config import Config
 from .extensions import db, migrate, login_manager, socketio, mail
 from .models.models import User
 
-
-
 from dotenv import load_dotenv
 load_dotenv() 
 
-def create_app(config_class=Config):
+def create_app(is_production=False):
+    is_production = os.getenv('FLASK_ENV', 'false').lower() == 'true'
+    print(f"Running in mode: {'PRODUCTION' if is_production else 'DEVELOPMENT'}")
+    
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    app.config.from_object(Config(is_production=is_production))
     
     # Initialize extensions
     db.init_app(app)
@@ -47,7 +48,6 @@ def create_app(config_class=Config):
     app.register_blueprint(search_bp, url_prefix="/search/")
 
     # Register authentication
-
     from .auth import auth
     app.register_blueprint(auth, url_prefix="/")
 
