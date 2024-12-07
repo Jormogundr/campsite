@@ -3,19 +3,11 @@
 This is a flask project using a remote postgresql server to store data for the model. Currently it is hosted by Heroku. The leaflet.js library is used to add map functionality, which display the OSM tiles that the user sees. 
 
 The purpose of this project is to showcase some web development and design pattern knowledge. The design patterns you'll see consist of, mainly:
-- Model-View-Controller: a very popular pattern for web applications, used here as well. It's useful because it makes the project code better organized and easier to understand. Each part of MVC has its own file in the `website/` directory. The authentication logic has its own file `auth.py`: a common practice in an MVC implementation, since this logic does not typically fit neatly within any particular component of MVC. 
-- Observer: In `website/controllers/notifications.py`, an observer has been added to handle emailing users when they are added as collaborators to a CampSite list. Future work is planned to allow these users the ability to add and remove CampSites to and from a CampSite list. 
+- Observer: In `website/controllers/notifications.py`, an observer has been added to handle emailing users when they are added as collaborators to a CampSite list. Future work is planned to allow these users the ability to add and remove CampSites to and from a CampSite list. This could be extended in the future to a push notification, if the application were to get a mobile app version.
 - Proxy: In `website/static/script/marker_loader.js`, a Proxy pattern has been implemented that caches markers and lazily loads markers on the singleton leaflet. The initial concern was that the map could become very slow to load as more and more users add CampSites to the map. This at least partly addresses the problem for now. 
 - Singleton: Also in `website/static/script/map.js` is the `CampSiteMapSingleton` class, which represents the single global map object for the website. A single map instance was desired to make the map experience consistent for all users.
+- Model-View-Controller: a very popular pattern for web applications, used here as well. It's useful because it makes the project code better organized and easier to understand. Each part of MVC has its own file in the `website/` directory. The authentication logic has its own file `auth.py`: a common practice in an MVC implementation, since this logic does not typically fit neatly within any particular component of MVC. 
 
-
-# Heroku
-
-This project is hosted by Heroku and uses a Heroku Postgres database. Heroku rotates database credentials periodically, meaning the URI, user, and password may change. Therefore, anything that is hardcoded in the `.env` file may become out of date. 
-
-Occasionally, you should run `heroku config:get DATABASE_URL --app campsite` to get the latest credentials so you can run the application locally. Run the command and update the `DATABASE_URL` field. 
-
-This is only necessary for local testing. Heroku will automatically update these environment variables on their end. 
 
 # How to Deploy Locally
 
@@ -38,3 +30,11 @@ The application targets a fairly niche community of backpackers, hunters, camper
 As an avid backpacker myself, I often wish there was a better way to track my favorite camping locations other than something like a Google Maps pin. 
 
 The problem is that there is a gap in a nice interface for doing this, and the motivation is to make one for myself and others to enjoy.
+
+# Heroku
+
+This project is hosted by Heroku and uses a Heroku Postgres database. Heroku rotates database credentials periodically, meaning the URI, user, and password may change. Therefore, anything that is hardcoded in the `.env` file may become out of date. 
+
+Occasionally, you should run `heroku config:get DATABASE_URL --app campsite` to get the latest credentials so you can run the application locally. Run the command and update the `DATABASE_URL` field. 
+
+This is only necessary for local testing. Heroku will automatically update these environment variables on their end. 
