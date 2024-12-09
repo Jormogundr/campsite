@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 def create_app(is_production=False):
-    is_production = os.getenv('FLASK_ENV', 'false').lower() == 'true'
+    is_production = os.getenv('FLASK_ENV', 'false').lower() == 'production'
     print(f"Running in mode: {'PRODUCTION' if is_production else 'DEVELOPMENT'}")
     
     app = Flask(__name__)
